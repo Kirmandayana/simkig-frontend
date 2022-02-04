@@ -11,7 +11,7 @@ const theme = createTheme({
         MuiAppBar: {
             styleOverrides: {
                 root: {
-                    height: '6em',
+                    height: '4em',
                     display: 'flex',
                     flexDirection: 'column'
                 }
