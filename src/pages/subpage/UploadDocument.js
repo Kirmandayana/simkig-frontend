@@ -1,34 +1,40 @@
 import { Typography, TextField, Button } from '@mui/material';
-import { AdapterDateFns, LocalizationProvider, DatePicker } from;
 import React from 'react';
+import { useState } from 'react';
+import DateAdapter from '@mui/lab/AdapterDayjs';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
 function UploadDocument() {
+   const [value, setValue] = useState(null);
 
-   const [value, setValue] = React.useState(null);
-
-  return (
-      <div style={{display:'flex', flexDirection: 'column', flexGrow:1}}>
+   return (
+      <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center'}}>
          
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                <Typography variant='h6'>Unggah Dokumentasi Hasil Kegiatan Belajar Mengajar</Typography>
             </div>
 
-            <div style={{backgroundColor:'green', display: 'flex', flexDirection:'column', padding: '1em 15em 1em 15em'}}>
+            <div style={{display: 'flex', flexDirection:'column', width: '50em'}}>
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
                   <Typography  style={{flexGrow: 1}}>Tanggal</Typography>
-                  <LocalizationProvider dateAdapter={AdapterDateFns}>
-                     <DatePicker value={value} onChange={(newValue) => { setValue(newValue); }} renderInput={(params) => <TextField {...params} />} />
+                  <LocalizationProvider dateAdapter={DateAdapter}>
+                     <DatePicker 
+                        value={value}
+                        onChange={(newValue) => {
+                           setValue(newValue);
+                        }} renderInput={(params) => <TextField style={{width: '40em'}} {...params} />}  />
                   </LocalizationProvider>
                </div>
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
                   <Typography style={{flexGrow: 1}}>Nama Kelas</Typography>
-                  <TextField id='outline-select-currency' label='Masukan Nama Kelas' style={{width: '40em'}}/>
+                  <TextField id='outline-select-currency' style={{width: '40em'}}/>
                </div>
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
                   <Typography style={{flexGrow: 1}}>Mata Pelajaran</Typography> 
-                  <TextField id='outline-select-currency' label='Masukan Mata Pelajaran' style={{width: '40em'}}/>
+                  <TextField id='outline-select-currency' style={{width: '40em'}}/>
                </div>
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
@@ -51,7 +57,7 @@ function UploadDocument() {
                <Button variant='contained' color='primary' style={{height: '4em', width: '10em', marginTop: '1em', alignSelf: 'end'}}>Kirim</Button>
             </div>
       </div>
-  );
+   );
 }
 
 export default UploadDocument;
