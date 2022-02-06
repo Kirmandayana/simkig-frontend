@@ -6,6 +6,7 @@ import homeIcon from '../assets/homeIcon.png';
 import documentIcon from '../assets/documentIcon.png';
 import logOutIcon from '../assets/logOutIcon.png';
 import uploadDocumentIcon from '../assets/uploadDocumentIcon.png';
+import UploadDocument from './subpage/UploadDocument';
 
 function Home() {
     const navigate = useNavigate()
@@ -52,7 +53,8 @@ function Home() {
 
                 {/* konten */}
                 <div style={{flexGrow: 1, minHeight: '32em', display: 'flex'}}>
-                    <Paper elevation={10} style={{flexGrow: 1, padding: '1em'}}>
+                    <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex'}}>
+                        <UploadDocument/>
                     </Paper>
                 </div>
             </div>
