@@ -29,12 +29,12 @@ function UploadDocument() {
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
                   <Typography style={{flexGrow: 1}}>Nama Kelas</Typography>
-                  <TextField id='outline-select-currency' style={{width: '40em'}}/>
+                  <TextField id='outline-basic' style={{width: '40em'}}/>
                </div>
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
                   <Typography style={{flexGrow: 1}}>Mata Pelajaran</Typography> 
-                  <TextField id='outline-select-currency' style={{width: '40em'}}/>
+                  <TextField id='outline-basic' style={{width: '40em'}}/>
                </div>
 
                <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>

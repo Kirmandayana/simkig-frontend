@@ -6,7 +6,9 @@ import homeIcon from '../assets/homeIcon.png';
 import documentIcon from '../assets/documentIcon.png';
 import logOutIcon from '../assets/logOutIcon.png';
 import uploadDocumentIcon from '../assets/uploadDocumentIcon.png';
-import UploadDocument from './subpage/UploadDocument';
+import UploadDocument from './subpage/guru/UploadDocument';
+import TableLaporanGuru from './subpage/wakilKepsek/TableLaporanGuru';
+import DetailLaporanGuru from './subpage/wakilKepsek/DetailLaporanGuru';
 
 function Home() {
     const navigate = useNavigate()
