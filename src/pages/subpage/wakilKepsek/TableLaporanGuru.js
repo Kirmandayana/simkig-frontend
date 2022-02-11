@@ -1,39 +1,17 @@
 import React from 'react';
 import { TextField, Button, Paper } from '@mui/material';
-import { Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 
-// style table
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
 
 //Data Table Sementara
 function createData(NIK, namaGuru, keterangan) {
   return { NIK, namaGuru, keterangan };
 }
 
-
 const rows = [
-  createData(1234567890, 'Guru A', <Button>Lihat Detail Laporan</Button>),
-  createData(1234567890, 'Guru A', <Button>Lihat Detail Laporan</Button>),
+  createData(1234567890, 'Guru A', <Button variant='contained' color='primary'>Lihat Detail Laporan</Button>),
+  createData(1234567890, 'Guru A', <Button variant='contained' color='primary'>Lihat Detail Laporan</Button>),
   
 ];
 
@@ -55,27 +33,28 @@ function TableLaporanGuru() {
         <div style={{marginTop: '1em'}}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: '63.5em' }} aria-label="customized table">
-              <TableHead>
+              <TableHead style={{backgroundColor: '#d1d1d1'}}>
                 <TableRow>
-                  <StyledTableCell align="center">NIK</StyledTableCell>
-                  <StyledTableCell align="center">Nama Guru</StyledTableCell>
-                  <StyledTableCell align="center"></StyledTableCell>
+                  <TableCell align="center">NIK</TableCell>
+                  <TableCell align="center">Nama Guru</TableCell>
+                  <TableCell align="center"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.map((row) => (
-                  <StyledTableRow key={row.NIK}>
-                    <StyledTableCell component="th" scope="row" align="left">
+                  <TableRow key={row.NIK}>
+                    <TableCell component="th" scope="row" align="left">
                       {row.NIK}
-                    </StyledTableCell>
-                    <StyledTableCell align="left">{row.namaGuru}</StyledTableCell>
-                    <StyledTableCell align="center">{row.keterangan}</StyledTableCell>
-                  </StyledTableRow>
+                    </TableCell>
+                    <TableCell align="left">{row.namaGuru}</TableCell>
+                    <TableCell align="center">{row.keterangan}</TableCell>
+                  </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         </div>
+        
     </div>
   );
 }

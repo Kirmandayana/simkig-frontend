@@ -1,14 +1,13 @@
-import { Paper, Typography } from '@mui/material';
+import { Paper, Typography} from '@mui/material';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
-import homeIcon from '../assets/homeIcon.png';
-import documentIcon from '../assets/documentIcon.png';
-import logOutIcon from '../assets/logOutIcon.png';
-import uploadDocumentIcon from '../assets/uploadDocumentIcon.png';
-import UploadDocument from './subpage/guru/UploadDocument';
-import TableLaporanGuru from './subpage/wakilKepsek/TableLaporanGuru';
-import DetailLaporanGuru from './subpage/wakilKepsek/DetailLaporanGuru';
+import UploadDocument from './subpage/guru/UploadDocument'
+import HasilDocument from './subpage/guru/HasilDocument'
+import TableLaporanGuru from './subpage/wakilKepsek/TableLaporanGuru'
+import DetailLaporanGuru from './subpage/wakilKepsek/DetailLaporanGuru'
+import Dashboard from './subpage/wakilKepsek/Dashboard'
+import SidebarWakilKepsek from './subpage/wakilKepsek/SidebarWakilKepsek'
 
 function Home() {
     const navigate = useNavigate()
@@ -31,24 +30,7 @@ function Home() {
                             <Typography variant='h6'>Akademis</Typography>
                         </div>
                         <div style={{backgroundColor: '#18A0FB'}}>
-                            <div style={{display: 'flex', flexDirection: 'column', margin: '0em 1em 0em 1em', paddingTop: '1em'}}>
-                                <div style={{display: 'flex', flexDirection: 'row', height: '2.7em'}}>
-                                    <img src={homeIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
-                                    <Typography>Beranda</Typography>
-                                </div>
-                                <div style={{display: 'flex', flexDirection: 'row', height: '2.7em'}}>
-                                    <img src={uploadDocumentIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
-                                    <Typography>Unggah Dokumen</Typography>
-                                </div>
-                                <div style={{display: 'flex', flexDirection: 'row', height: '2.7em'}}>
-                                    <img src={documentIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
-                                    <Typography>Lihat Laporan</Typography>
-                                </div>
-                                <div style={{display: 'flex', flexDirection: 'row', height: '2.7em'}}>
-                                    <img src={logOutIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
-                                    <Typography>Keluar</Typography>
-                                </div>
-                            </div>
+                            <SidebarWakilKepsek />
                         </div>
                     </Paper>
                 </div>
@@ -56,7 +38,7 @@ function Home() {
                 {/* konten */}
                 <div style={{flexGrow: 1, minHeight: '32em', display: 'flex'}}>
                     <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex'}}>
-                        <UploadDocument/>
+                        <Dashboard />
                     </Paper>
                 </div>
             </div>
