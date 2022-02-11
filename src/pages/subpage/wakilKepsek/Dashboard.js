@@ -59,53 +59,51 @@ function createData(NIK, namaGuru, keterangan) {
 
 const rows = [
   createData(1234567890, 'Guru A', 'Sakit'),
-  createData(1234567890, 'Guru A', 'Sakit'),
-  
+  createData(1234567890, 'Guru B', 'Izin'),
+  createData(1234567890, 'Guru C', 'Sakit'),
+  createData(1234567890, 'Guru D', 'Izin'),
+  createData(1234567890, 'Guru E', 'Sakit'),
 ];
 
 function Dashboard() {
   return (
-    <div>
-      
-      {/* Pie Chart */}
-      <div>
+    <div style={{display: 'flex', flexDirection: 'column'}}>
+    
+      <div style={{display: 'flex'}}>
         <Paper>
           <Typography style={{paddingLeft: '1em'}}>Kehadiran Guru</Typography>
           <Pie data={dataPieChart} style={{paddingBottom:'1em'}} />
         </Paper>
-      </div>
 
-      <div style={{marginTop:'2em'}}>
-        <Paper>
+        <Paper style={{flexGrow: 1}}>
           <Line data={dataLineChart} />
         </Paper>
       </div>
 
-      {/* table */}
       <div style={{marginTop: '1em'}}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: '63.5em' }} aria-label="customized table">
-              <TableHead style={{backgroundColor: '#d1d1d1'}}>
-                <TableRow>
-                  <TableCell align="center">NIK</TableCell>
-                  <TableCell align="center">Nama Guru</TableCell>
-                  <TableCell align="center">Keterangan</TableCell>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: '63.5em' }} aria-label="customized table">
+            <TableHead style={{backgroundColor: '#d1d1d1'}}>
+              <TableRow>
+                <TableCell align="center">NIK</TableCell>
+                <TableCell align="center">Nama Guru</TableCell>
+                <TableCell align="center">Keterangan</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell component="th" scope="row" align="left">
+                    {row.NIK}
+                  </TableCell>
+                  <TableCell align="left">{row.namaGuru}</TableCell>
+                  <TableCell align="center">{row.keterangan}</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.NIK}>
-                    <TableCell component="th" scope="row" align="left">
-                      {row.NIK}
-                    </TableCell>
-                    <TableCell align="left">{row.namaGuru}</TableCell>
-                    <TableCell align="center">{row.keterangan}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
 
     </div>
   )

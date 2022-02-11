@@ -2,8 +2,15 @@ import { Button, TextField, Typography } from '@mui/material';
 import React from 'react';
 import NavBar from '../components/NavBar';
 import loginArtwork from '../assets/loginArtwork.png';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+    const navigate = useNavigate();
+
+    const loginButtonHandler = () => {
+        navigate('/home');
+    }
+
     return (
         <div style={{width: '100%', height: window.innerHeight, display: 'flex', flexDirection: 'column'}}>
             {/* NavBar Area */}
@@ -28,7 +35,13 @@ function Login() {
                             <TextField variant='outlined' label='Nama Pengguna' style={{margin: '2em 0em 0em 0em'}}/>
                             <TextField variant='outlined' label='Kata sandi' style={{margin: '1em 0em 0em 0em'}}/>
                             <Typography style={{margin: '0em 0em 1em 0em', alignSelf: 'end'}}>Lupa kata sandi?</Typography>
-                            <Button variant='contained' color='primary' style={{height: '4em', width: '10em', alignSelf: 'end'}}>Masuk</Button>
+                            <Button 
+                                variant='contained' 
+                                color='primary' 
+                                style={{height: '4em', width: '10em', alignSelf: 'end'}}
+                                onClick={loginButtonHandler}>
+                                Masuk
+                            </Button>
                         </div>
                     </div>
                 </div>
