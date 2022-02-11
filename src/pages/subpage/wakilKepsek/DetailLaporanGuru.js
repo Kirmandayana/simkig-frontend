@@ -26,20 +26,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 //Data Table Sementara
 function createData(tanggal, namaKelas, mataPelajaran, jumlahSiswa, buktiKBM, keluhan) {
-    return { tanggal, namaKelas, mataPelajaran, jumlahSiswa, buktiKBM, keluhan };
-  }
+  return { tanggal, namaKelas, mataPelajaran, jumlahSiswa, buktiKBM, keluhan };
+}
   
-  
-  const rows = [
-    createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
-    createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
-    
-  ];
+const rows = [
+  createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
+  createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
+];
   
 
 function DetailLaporanGuru() {
   return (
-  
     <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center'}}>
         
         <div style={{display: 'flex', flexDirection: 'column', width: '100%', }}>

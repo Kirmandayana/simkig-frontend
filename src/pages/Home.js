@@ -56,7 +56,7 @@ function Home() {
                 {/* konten */}
                 <div style={{flexGrow: 1, minHeight: '32em', display: 'flex'}}>
                     <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex'}}>
-                        <UploadDocument/>
+                        <TableLaporanGuru/>
                     </Paper>
                 </div>
             </div>
