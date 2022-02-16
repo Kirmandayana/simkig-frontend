@@ -1,5 +1,5 @@
 import { Paper, Typography} from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UploadDocument from './subpage/guru/UploadDocument'
@@ -14,20 +14,26 @@ import SidebarGuru from './subpage/guru/SidebarGuru'
 function Home() {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState('Dashboard')
-    const [currentUserType, setCurrentUserType] = useState('guru')
     const handleSidebarClick = (selectedPage) => setCurrentPage(selectedPage)
     const handleLogout = () => {
-        // later we'll use this
-        //
-        // localStorage.removeItem('token')
-        // window.location.reload()
-
-        // for now, use fake logout by navigating back to login page
+        localStorage.removeItem('accessToken')
         navigate('/')
     }
 
     let contentPage = <div>Page not defined</div>
     let sidebar = <div>Sidebar not defined</div>
+    let currentUserType = undefined
+
+    //parse base64 string from localStorage as json
+    const identifier = JSON.parse(atob(localStorage.getItem('accessToken').split('.')[0])).identifier
+
+    if(identifier.accessLevel === 0) {
+        currentUserType = 'guru'
+    } else if(identifier.accessLevel === 1) {
+        currentUserType = 'wakilKepsek'
+    } else {
+        currentUserType = 'wakilKepsek'
+    }
 
     if(currentUserType === 'wakilKepsek') {
         sidebar = <SidebarWakilKepsek handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>

@@ -30,6 +30,18 @@ const theme = createTheme({
 })
 
 function NavBar() {
+    //get identifier from base64 encoded string in localStorage
+    let identifier
+    
+    try {
+        identifier = JSON.parse(atob(localStorage.getItem('accessToken').split('.')[0])).identifier
+    } catch (err) {
+        identifier = {
+            name: '',
+            occupation: ''
+        }
+    }
+
     return (
         <ThemeProvider theme={theme}>
             <AppBar>
@@ -41,8 +53,11 @@ function NavBar() {
 
                     <Typography style={{marginLeft: '2em', flexGrow: 1}} variant='h5'>Sistem Informasi Manajemen Kinerja Guru</Typography>
 
-                    <div style={{width: '10em'}}>
-                        RightPane
+                    {identifier.name != '' && <div style={{width: '0.1em', backgroundColor: 'rgba(0, 0, 0, 0.25)', height: '80%'}}> </div>}
+
+                    <div style={{width: '10em', display: 'flex', flexDirection: 'column', marginLeft: '2em'}}>
+                        <Typography>{identifier.name}</Typography>
+                        <Typography>{identifier.occupation}</Typography>
                     </div>
                 </Toolbar>
             </AppBar>

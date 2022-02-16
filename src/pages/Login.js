@@ -1,14 +1,43 @@
 import { Button, TextField, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import NavBar from '../components/NavBar';
 import loginArtwork from '../assets/loginArtwork.png';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
     const navigate = useNavigate();
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
 
     const loginButtonHandler = () => {
-        navigate('/home');
+        // fetch("https://localhost:8080/api/auth/login")
+        // send post request to login endpoint
+        fetch("http://localhost:8080/api/auth/login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        })
+        .then(resp => {
+            if(resp.status === 200) {
+                // login success
+                resp.json().then(data => {
+                    console.log(data)
+                    localStorage.setItem('accessToken', data.accessToken)
+                    setUsername('')
+                    setPassword('')
+
+                    navigate('/home')
+                })
+            } else {
+                // login failed
+                resp.json().then(data => alert(data.result))
+            }
+        })
     }
 
     return (
@@ -32,8 +61,8 @@ function Login() {
                         <Typography variant='h4'>Sistem Informasi Manajemen Kinerja Guru</Typography>
 
                         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '0em 5em 0em 0em'}}>
-                            <TextField variant='outlined' label='Nama Pengguna' style={{margin: '2em 0em 0em 0em'}}/>
-                            <TextField variant='outlined' label='Kata sandi' style={{margin: '1em 0em 0em 0em'}}/>
+                            <TextField value={username} variant='outlined' label='Nama Pengguna' style={{margin: '2em 0em 0em 0em'}} onChange={(e) => setUsername(e.target.value)}/>
+                            <TextField value={password} variant='outlined' label='Kata sandi' style={{margin: '1em 0em 0em 0em'}} onChange={(e) => setPassword(e.target.value)}/>
                             <Typography style={{margin: '0em 0em 1em 0em', alignSelf: 'end'}}>Lupa kata sandi?</Typography>
                             <Button 
                                 variant='contained' 
