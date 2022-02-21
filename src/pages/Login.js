@@ -1,5 +1,5 @@
 import { Button, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar';
 import loginArtwork from '../assets/loginArtwork.png';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +9,14 @@ function Login() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
+    useEffect(() => {
+        //if user already logged in
+        //redirect to home
+        if(localStorage.getItem('accessToken')) 
+            navigate('/home') 
+    }, [])
+
     const loginButtonHandler = () => {
-        // fetch("https://localhost:8080/api/auth/login")
         // send post request to login endpoint
         fetch("http://localhost:8080/api/auth/login", {
             method: 'POST',
