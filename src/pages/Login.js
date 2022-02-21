@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar';
 import loginArtwork from '../assets/loginArtwork.png';
 import { useNavigate } from 'react-router-dom';
+import BACKEND_URL from '../globals';
 
 function Login() {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ function Login() {
 
     const loginButtonHandler = () => {
         // send post request to login endpoint
-        fetch("http://localhost:8080/api/auth/login", {
+        fetch(BACKEND_URL + "/api/auth/login", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

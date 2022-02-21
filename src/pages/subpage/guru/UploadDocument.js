@@ -6,6 +6,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import dayjs from 'dayjs'
 import { DateTimePicker } from '@mui/lab';
+import BACKEND_URL from '../../../globals';
 
 function UploadDocument() {
    const [dateVal, setDateVal] = useState(null)
@@ -47,7 +48,7 @@ function UploadDocument() {
       data.append('keluhan', keluhanVal)
 
       //send data to server as multipart/form-data
-      fetch('http://localhost:8080/api/document/uploadDocument', {
+      fetch(BACKEND_URL + '/api/document/uploadDocument', {
          method: 'POST',
          headers: {
             'access-token': localStorage.getItem('accessToken')
