@@ -15,7 +15,7 @@ function Login() {
         //redirect to home
         if(localStorage.getItem('accessToken')) 
             navigate('/home') 
-    }, [])
+    }, [navigate])
 
     const loginButtonHandler = () => {
         // send post request to login endpoint
@@ -58,7 +58,7 @@ function Login() {
             <div style={{display: 'flex', flexGrow: 1, flexDirection: 'row'}}>
                 {/* Background Element */}
                 <div style={{flexGrow: 1, display: 'flex'}}>
-                    <img src={loginArtwork} style={{width: '40em', margin: 'auto'}}/>
+                    <img src={loginArtwork} style={{width: '40em', margin: 'auto'}} alt=''/>
                 </div>
 
                 {/* Login Text and Form */}

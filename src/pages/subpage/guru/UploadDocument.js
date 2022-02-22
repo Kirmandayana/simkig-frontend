@@ -3,7 +3,6 @@ import React, { createRef } from 'react';
 import { useState } from 'react';
 import DateAdapter from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePicker from '@mui/lab/DatePicker';
 import dayjs from 'dayjs'
 import { DateTimePicker } from '@mui/lab';
 const {BACKEND_URL} = require('../../../globals')
