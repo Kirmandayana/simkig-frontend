@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from '../components/NavBar';
 import loginArtwork from '../assets/loginArtwork.png';
 import { useNavigate } from 'react-router-dom';
-import BACKEND_URL from '../globals';
+const {BACKEND_URL} = require('../globals')
 
 function Login() {
     const navigate = useNavigate();

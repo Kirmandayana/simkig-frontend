@@ -6,7 +6,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
 import dayjs from 'dayjs'
 import { DateTimePicker } from '@mui/lab';
-import BACKEND_URL from '../../../globals';
+const {BACKEND_URL} = require('../../../globals')
 
 function UploadDocument() {
    const [dateVal, setDateVal] = useState(null)
