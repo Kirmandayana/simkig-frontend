@@ -6,10 +6,14 @@ import UploadDocument from './subpage/guru/UploadDocument'
 import HasilDocument from './subpage/guru/HasilDocument'
 import TableLaporanGuru from './subpage/wakilKepsek/TableLaporanGuru'
 import DetailLaporanGuru from './subpage/wakilKepsek/DetailLaporanGuru'
-import NonGuruDashboard from './subpage/wakilKepsek/Dashboard'
+import WakilKepsekDashboard from './subpage/wakilKepsek/Dashboard'
 import GuruDashboard from './subpage/guru/Dashboard'
 import SidebarWakilKepsek from './subpage/wakilKepsek/SidebarWakilKepsek'
 import SidebarGuru from './subpage/guru/SidebarGuru'
+import SidebarOperator from './subpage/operator/SidebarOperator'
+import OperatorDashboard from './subpage/operator/Dashboard'
+import ManajemenUser from './subpage/operator/ManajemenUser'
+import ManajemenServer from './subpage/operator/ManajemenServer'
 
 function Home() {
     const navigate = useNavigate();
@@ -31,15 +35,15 @@ function Home() {
         currentUserType = 'guru'
     } else if(identifier.accessLevel === 1) {
         currentUserType = 'wakilKepsek'
-    } else {
-        currentUserType = 'wakilKepsek'
+    } else if(identifier.accessLevel == 3) {
+        currentUserType = 'admin'
     }
 
     if(currentUserType === 'wakilKepsek') {
         sidebar = <SidebarWakilKepsek handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>
         switch(currentPage) {
             case 'Dashboard':
-                contentPage = <NonGuruDashboard/>
+                contentPage = <WakilKepsekDashboard/>
                 break
             case 'LihatLaporan':
                 contentPage = <TableLaporanGuru/>
@@ -62,7 +66,23 @@ function Home() {
             default:
                 break
         }
+    } else if(currentUserType === 'admin') {
+        sidebar = <SidebarOperator handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>
+        switch(currentPage) {
+            case 'Dashboard':
+                contentPage = <OperatorDashboard/>
+                break
+            case 'ManajemenUser':
+                contentPage = <ManajemenUser/>
+                break
+            case 'ManajemenServer':
+                contentPage = <ManajemenServer/>
+                break
+            default:
+                break
+        }
     }
+
     
     return (
         <div>
