@@ -69,7 +69,7 @@ function Login() {
 
                         <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '0em 5em 0em 0em'}}>
                             <TextField value={username} variant='outlined' label='Nama Pengguna' style={{margin: '2em 0em 0em 0em'}} onChange={(e) => setUsername(e.target.value)}/>
-                            <TextField value={password} variant='outlined' label='Kata sandi' style={{margin: '1em 0em 0em 0em'}} onChange={(e) => setPassword(e.target.value)}/>
+                            <TextField value={password} variant='outlined' label='Kata sandi' type='password' style={{margin: '1em 0em 0em 0em'}} onChange={(e) => setPassword(e.target.value)}/>
                             <Typography style={{margin: '0em 0em 1em 0em', alignSelf: 'end'}}>Lupa kata sandi?</Typography>
                             <Button 
                                 variant='contained' 
