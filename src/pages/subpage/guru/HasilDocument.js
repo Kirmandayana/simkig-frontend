@@ -15,7 +15,11 @@ import {
   InputLabel, 
   FormControl 
 } from '@mui/material';
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
+dayjs.extend(utc)
+
 
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
@@ -129,7 +133,7 @@ const DocumentRow = ({row, index}) => {
   return (
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
-        {row.date}
+        {dayjs.utc(row.date).format('YYYY-MM-DD HH:mm')}
       </TableCell>
       {
         row.photoFilename ?
@@ -190,8 +194,10 @@ function HasilDocument() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.map((row, index) => 
-                  <DocumentRow row={row} key={row.id} index={index}/>
+              {data.sort((a, b) => 
+                dayjs.utc(a.date).isAfter(dayjs.utc(b.date)) ? 1 : -1
+              ).map((row, index) => 
+                <DocumentRow row={row} key={row.id} index={index}/>
               )}
             </TableBody>
           </Table>
