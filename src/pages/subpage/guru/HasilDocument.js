@@ -20,6 +20,14 @@ const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
 
+const getUserInfoFromAccessToken = () => {
+  //convert access token from jwt to json
+  const jwt = localStorage.getItem('accessToken')
+  const jwtParts = jwt.split('.')
+  const jwtBody = JSON.parse(atob(jwtParts[0]))
+  return jwtBody
+}
+
 
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
@@ -90,12 +98,15 @@ const FilterBar = ({setData}) => {
             },
             body: JSON.stringify({
               rangeStart: getMonthRange(month, year)[0],
-              rangeEnd: getMonthRange(month, year)[1]
+              rangeEnd: getMonthRange(month, year)[1],
+              teacherId: getUserInfoFromAccessToken().identifier.id
             })
           })
-          .then(res => res.json())
           .then(res => {
-            setData(res)
+            if(res.status === 200)
+              return res.json().then(res => setData(res))
+            else
+              return res.json().then(msg => console.log(msg))
           })
         }}
       >Tampilkan</Button>
@@ -168,12 +179,15 @@ function HasilDocument() {
       },
       body: JSON.stringify({
         rangeStart: getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[0],
-        rangeEnd: getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[1]
+        rangeEnd: getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[1],
+        teacherId: getUserInfoFromAccessToken().identifier.id
       })
     })
-    .then(res => res.json())
     .then(res => {
-      setData(res)
+      if(res.status === 200)
+        return res.json().then(res => setData(res))
+      else
+        return res.json().then(msg => console.log(msg))
     })
     
   }, [])
