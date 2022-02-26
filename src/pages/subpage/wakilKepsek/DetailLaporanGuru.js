@@ -1,19 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TextField, Button, Paper, Typography } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import loginArtwork from '../../../assets/loginArtwork.png';
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
+const {BACKEND_URL} = require('../../../globals')
+dayjs.extend(utc)
 
+
+
+const DocumentRow = ({ row, index }) => {
+  return (
+    <TableRow key={row.tanggal}>
+      <TableCell component="th" scope="row" align="left">
+        {row.tanggal}
+      </TableCell>
+      <TableCell align="left">{row.namaKelas}</TableCell>
+      <TableCell align="left">{row.mataPelajaran}</TableCell>
+      <TableCell align="center">{row.jumlahSiswa}</TableCell>
+      <TableCell align="center">{row.buktiKBM}</TableCell>
+      <TableCell align="left">{row.keluhan}</TableCell>
+    </TableRow>
+  )
+}
 
 //Data Table Sementara
 function createData(tanggal, namaKelas, mataPelajaran, jumlahSiswa, buktiKBM, keluhan) {
     return { tanggal, namaKelas, mataPelajaran, jumlahSiswa, buktiKBM, keluhan };
-  }
-   
-  const rows = [
-    createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, <img src={loginArtwork} style={{width: '20em', margin: 'auto'}}/>, 'tidak ada'),
-    createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
-    
-  ];
+}
+  
+const rows = [
+  createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, <img src={loginArtwork} style={{width: '20em', margin: 'auto'}}/>, 'tidak ada'),
+  createData('02-02-2022', 'Kelas A', 'Pelajaran A', 20, 'gambar', 'tidak ada'),
+  
+];
   
 
 function DetailLaporanGuru() {
@@ -41,17 +61,8 @@ function DetailLaporanGuru() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.tanggal}>
-                    <TableCell component="th" scope="row" align="left">
-                      {row.tanggal}
-                    </TableCell>
-                    <TableCell align="left">{row.namaKelas}</TableCell>
-                    <TableCell align="left">{row.mataPelajaran}</TableCell>
-                    <TableCell align="center">{row.jumlahSiswa}</TableCell>
-                    <TableCell align="center">{row.buktiKBM}</TableCell>
-                    <TableCell align="left">{row.keluhan}</TableCell>
-                  </TableRow>
+                {rows.map((row, index) => (
+                  <DocumentRow key={index} row={row} index={index}/>
                 ))}
               </TableBody>
             </Table>
