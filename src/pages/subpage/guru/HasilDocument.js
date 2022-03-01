@@ -144,7 +144,7 @@ const DocumentRow = ({row, index}) => {
   return (
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
-        {dayjs.utc(row.date).format('YYYY-MM-DD HH:mm')}
+        {dayjs(row.date).format('YYYY-MM-DD HH:mm')}
       </TableCell>
       {
         row.photoFilename ?
