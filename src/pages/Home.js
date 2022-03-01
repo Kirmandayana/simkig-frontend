@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UploadDocument from './subpage/guru/UploadDocument'
 import HasilDocument from './subpage/guru/HasilDocument'
-import TableLaporanGuru from './subpage/wakilKepsek/TableLaporanGuru'
-import DetailLaporanGuru from './subpage/wakilKepsek/DetailLaporanGuru'
+import TabelLaporanGuruContainer from './subpage/wakilKepsek/TabelLaporanGuruContainer'
 import WakilKepsekDashboard from './subpage/wakilKepsek/Dashboard'
 import GuruDashboard from './subpage/guru/Dashboard'
 import SidebarWakilKepsek from './subpage/wakilKepsek/SidebarWakilKepsek'
@@ -46,7 +45,7 @@ function Home() {
                 contentPage = <WakilKepsekDashboard/>
                 break
             case 'LihatLaporan':
-                contentPage = <TableLaporanGuru/>
+                contentPage = <TabelLaporanGuruContainer/>
                 break
             default:
                 break
