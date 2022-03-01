@@ -3,9 +3,11 @@ import React, { createRef } from 'react';
 import { useState } from 'react';
 import DateAdapter from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import dayjs from 'dayjs'
 import { DateTimePicker } from '@mui/lab';
+const dayjs = require('dayjs')
+const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
+dayjs.extend(utc)
 
 function UploadDocument() {
    const [dateVal, setDateVal] = useState(null)
@@ -39,7 +41,7 @@ function UploadDocument() {
       }
 
       //get date from dateVal and convert to format 'YYYY-MM-DD'
-      data.append('date', dayjs(dateVal).format('DD-MM-YYYY HH:mm').toString())
+      data.append('date', dayjs.utc(dateVal).format('DD-MM-YYYY HH:mm').toString())
       data.append('className', namaKelasVal)
       data.append('mataPelajaran', mapelVal)
       data.append('jumlahSiswaAktif', jumlahSiswaVal)
