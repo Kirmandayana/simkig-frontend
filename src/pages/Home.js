@@ -1,5 +1,5 @@
 import { Paper, Typography} from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import UploadDocument from './subpage/guru/UploadDocument'
@@ -14,6 +14,84 @@ import OperatorDashboard from './subpage/operator/Dashboard'
 import ManajemenUser from './subpage/operator/ManajemenUser'
 import ManajemenServer from './subpage/operator/ManajemenServer'
 
+const pageAccessHandler = (role, page, handleClick, handleLogout) => {
+    let contentPage = <div>Page not defined</div>
+    let sidebar = <div>Sidebar not defined</div>
+
+    switch(role) {
+        case 0:
+            sidebar = <SidebarGuru handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+
+            switch(page) {
+                case 'Dashboard':
+                    contentPage = <GuruDashboard/>
+                    break
+                case 'UploadDocument':
+                    contentPage = <UploadDocument/>
+                    break
+                case 'HasilDocument':
+                    contentPage = <HasilDocument/>
+                    break
+                default:
+                    break
+            }
+
+            break
+        case 1:
+            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+
+            switch(page) {
+                case 'Dashboard':
+                    contentPage = <WakilKepsekDashboard/>
+                    break
+                case 'LihatLaporan':
+                    contentPage = <TabelLaporanGuruContainer/>
+                    break
+                default:
+                    break
+            }
+
+            break
+        case 2:
+            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+
+            switch(page) {
+                case 'Dashboard':
+                    contentPage = <WakilKepsekDashboard/>
+                    break
+                case 'LihatLaporan':
+                    contentPage = <TabelLaporanGuruContainer/>
+                    break
+                default:
+                    break
+            }
+
+            break
+        case 3:
+            sidebar = <SidebarOperator handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+
+            switch(page) {
+                case 'Dashboard':
+                    contentPage = <OperatorDashboard/>
+                    break
+                case 'ManajemenUser':
+                    contentPage = <ManajemenUser/>
+                    break
+                case 'ManajemenServer':
+                    contentPage = <ManajemenServer/>
+                    break
+                default:
+                    break
+            }
+            
+            break
+        default:
+            break
+    }
+
+    return {sidebar, contentPage}
+}
+
 function Home() {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState('Dashboard')
@@ -22,66 +100,22 @@ function Home() {
         localStorage.removeItem('accessToken')
         navigate('/')
     }
-
-    let contentPage = <div>Page not defined</div>
-    let sidebar = <div>Sidebar not defined</div>
-    let currentUserType = undefined
+    
+    //redirect to login page if accessToken is not found
+    !localStorage.getItem('accessToken') && navigate('/')
 
     //parse base64 string from localStorage as json
-    const identifier = JSON.parse(atob(localStorage.getItem('accessToken').split('.')[0])).identifier
+    const identifier = localStorage.getItem('accessToken') && JSON.parse(
+        atob(localStorage.getItem('accessToken').split('.')[0])
+    ).identifier
 
-    if(identifier.accessLevel === 0) {
-        currentUserType = 'guru'
-    } else if(identifier.accessLevel === 1) {
-        currentUserType = 'wakilKepsek'
-    } else if(identifier.accessLevel == 3) {
-        currentUserType = 'admin'
-    }
-
-    if(currentUserType === 'wakilKepsek') {
-        sidebar = <SidebarWakilKepsek handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>
-        switch(currentPage) {
-            case 'Dashboard':
-                contentPage = <WakilKepsekDashboard/>
-                break
-            case 'LihatLaporan':
-                contentPage = <TabelLaporanGuruContainer/>
-                break
-            default:
-                break
-        }
-    } else if(currentUserType === 'guru') {
-        sidebar = <SidebarGuru handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>
-        switch(currentPage) {
-            case 'Dashboard':
-                contentPage = <GuruDashboard/>
-                break
-            case 'UploadDocument':
-                contentPage = <UploadDocument/>
-                break
-            case 'HasilDocument':
-                contentPage = <HasilDocument/>
-                break
-            default:
-                break
-        }
-    } else if(currentUserType === 'admin') {
-        sidebar = <SidebarOperator handleSidebarClick={handleSidebarClick} handleLogout={handleLogout}/>
-        switch(currentPage) {
-            case 'Dashboard':
-                contentPage = <OperatorDashboard/>
-                break
-            case 'ManajemenUser':
-                contentPage = <ManajemenUser/>
-                break
-            case 'ManajemenServer':
-                contentPage = <ManajemenServer/>
-                break
-            default:
-                break
-        }
-    }
-
+    //get sidebar and currentPage
+    const {sidebar, contentPage} = pageAccessHandler(
+        identifier && identifier.accessLevel, 
+        currentPage, 
+        handleSidebarClick, 
+        handleLogout
+    )
     
     return (
         <div>
