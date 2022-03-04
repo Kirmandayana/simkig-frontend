@@ -12,6 +12,17 @@ const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-${new Date(year, month, 0).getDate()}`
 ]
 
+const getIdentifier = () => {
+  const accessToken = localStorage.getItem('accessToken')
+
+  if(accessToken) {
+    const identifier = accessToken.split('.')[0]
+    return JSON.parse(atob(identifier)).identifier
+  } else {
+    return null
+  }
+}
+
 const monthNumber = {
   1: 'Januari',
   2: 'Februari',
@@ -167,12 +178,15 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
           >Kembali</Button>
           <Typography variant='h6' >Nama Guru: {selectedUser.fullName}</Typography>
           <Typography variant='h6' >Laporan KBM Bulan {monthNumber[selectedMonth]} Tahun {selectedYear}</Typography>
-          <Button 
-            variant='contained' 
-            color='primary' 
-            style={{ height: '2em', width: '5em', alignSelf: 'end', marginRight: '2em'}}
-            onClick={exportDocumentButtonHandler}
-          >Ekspor</Button>
+          {
+            getIdentifier().accessLevel !== 2 &&
+            <Button 
+              variant='contained' 
+              color='primary' 
+              style={{ height: '2em', width: '5em', alignSelf: 'end', marginRight: '2em'}}
+              onClick={exportDocumentButtonHandler}
+            >Ekspor</Button>
+          }
         </div>
 
         {/* Table */}
