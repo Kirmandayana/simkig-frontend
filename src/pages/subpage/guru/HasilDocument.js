@@ -28,16 +28,33 @@ const getUserInfoFromAccessToken = () => {
   return jwtBody
 }
 
+const getDocumentList = async (rangeStart, rangeEnd) => {
+  const response = await fetch(BACKEND_URL + `/api/document/getDocumentList`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'access-token': localStorage.getItem('accessToken')
+    },
+    body: JSON.stringify({
+      rangeStart,
+      rangeEnd,
+      teacherId: getUserInfoFromAccessToken().identifier.id
+    })
+  })
+
+  if(response.status === 200)
+    return await response.json().then(res => res.sort((a, b) => dayjs(a.date).isBefore(dayjs(b.date))))
+  else
+    throw new Error(await response.json())
+}
+
 
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-${new Date(year, month, 0).getDate()}`
 ]
 
-const FilterBar = ({setData}) => {
-  const [month, setMonth] = useState('')
-  const [year, setYear] = useState('')
-
+const FilterBar = ({setData, month, setMonth, year, setYear}) => {
   return (
     <div style={{
       display: 'flex',
@@ -85,36 +102,18 @@ const FilterBar = ({setData}) => {
         style={{height: '100%'}}
         onClick={() => {
           //make sure month and year is valid
-          if(!month || !year) {
-            alert('Mohon isi bulan dan tahun dengan benar')
-            return
-          }
+          if(!month || !year) return alert('Mohon isi bulan dan tahun dengan benar')
 
-          fetch(BACKEND_URL + `/api/document/getDocumentList`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'access-token': localStorage.getItem('accessToken')
-            },
-            body: JSON.stringify({
-              rangeStart: getMonthRange(month, year)[0],
-              rangeEnd: getMonthRange(month, year)[1],
-              teacherId: getUserInfoFromAccessToken().identifier.id
-            })
-          })
-          .then(res => {
-            if(res.status === 200)
-              return res.json().then(res => setData(res))
-            else
-              return res.json().then(msg => console.log(msg))
-          })
+          getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1])
+          .then(res => setData(res))
+          .catch(err => {console.log(err); alert(err?.result)})
         }}
       >Tampilkan</Button>
     </div>
   )
 }
 
-const DocumentRow = ({row, index}) => {
+const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsenceButtonHandler}) => {
   const [img, setImg] = useState('')
   
   useEffect(() => {
@@ -135,16 +134,16 @@ const DocumentRow = ({row, index}) => {
 
   //zebra coloring on table
   if(index % 2 === 0)
-    if(!row.photoFilename) backgroundColor = '#ffcccc'
+    if(!row.photoFilename && !row.reason) backgroundColor = '#ffcccc'
     else backgroundColor = '#e0e0e0'
   else
-    if(!row.photoFilename) backgroundColor = '#ffb8b8'
+    if(!row.photoFilename && !row.reason) backgroundColor = '#ffb8b8'
     else backgroundColor = '#ffffff'
 
   return (
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
-        {dayjs(row.date).format('YYYY-MM-DD HH:mm')}
+        {dayjs(row.date).format(row.photoFilename ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD')}
       </TableCell>
       {
         row.photoFilename ?
@@ -156,10 +155,33 @@ const DocumentRow = ({row, index}) => {
             <img src={img} style={{height: '4em'}} />
           </TableCell>
           <TableCell align="left">{row.keluhan}</TableCell>
+          <TableCell align="center">
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={() => removeDocumentButtonHandler(row)}
+            >Hapus</Button>
+          </TableCell>
+        </>
+        :
+        row.reason ?
+        <>
+          <TableCell align="left"></TableCell>
+          <TableCell align="left"></TableCell>
+          <TableCell align="center">Beralasan: <b><i>{row.reason}</i></b></TableCell>
+          <TableCell align="center"></TableCell>
+          <TableCell align="center"></TableCell>
+          <TableCell align="center">
+            {/* <Button
+              variant='contained'
+              color='primary'
+              onClick={() => removeAbsenceButtonHandler(row)}
+            >Hapus</Button> */}
+          </TableCell>
         </>
         :
         <>
-          <TableCell align="center" colSpan={5}>BELUM DI ISI</TableCell>
+          <TableCell align="center" colSpan={6}>Belum diisi</TableCell>
         </>
       }
     </TableRow>
@@ -168,50 +190,78 @@ const DocumentRow = ({row, index}) => {
 
 function HasilDocument() {
   const [data, setData] = useState([])
+  const [month, setMonth] = useState(new Date().getMonth() + 1)
+  const [year, setYear] = useState(new Date().getFullYear())
 
-  useState(() => {
-    //fetch the data for current month upon mounting
-    fetch(BACKEND_URL + `/api/document/getDocumentList`, {
+  const removeDocumentButtonHandler = (row) => {
+    fetch(BACKEND_URL + `/api/document/removeDocument`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'access-token': localStorage.getItem('accessToken')
       },
-      body: JSON.stringify({
-        rangeStart: getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[0],
-        rangeEnd: getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[1],
-        teacherId: getUserInfoFromAccessToken().identifier.id
-      })
+      body: JSON.stringify({documentId: row.id})
     })
     .then(res => {
-      if(res.status === 200)
-        return res.json().then(res => setData(res))
-      else
-        return res.json().then(msg => console.log(msg))
+      if(res.status === 200) return res.json().then(res => alert(res?.result))
+      else return res.json().then(msg => alert(msg?.result))
     })
-    
+    .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res)))
+  }
+
+  // const removeAbsenceButtonHandler = (row) => {
+  //   fetch(BACKEND_URL + `/api/absence/removeAbsence`, {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'access-token': localStorage.getItem('accessToken')
+  //     },
+  //     body: JSON.stringify({absenceId: row.id})
+  //   })
+  //   .then(res => {
+  //     if(res.status === 200) return res.json().then(res => alert(res?.result))
+  //     else return res.json().then(msg => alert(msg?.result))
+  //   })
+  //   .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res)))
+  // }
+
+  useState(() => {
+    //fetch the data for current month upon mounting
+    getDocumentList(
+      getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[0],
+      getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[1],
+    )
+    .then(res => setData(res))
+    .catch(err => {console.log(err); alert(err?.result)})
   }, [])
 
   return (
     <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center', marginTop: '1em'}}>
-      <FilterBar setData={setData}/>
+      <FilterBar setData={setData} month={month} setMonth={setMonth} year={year} setYear={setYear}/>
       <TableContainer component={Paper} style={{flexGrow: 1}}>
           <Table sx={{ minWidth: '63.5em' }} aria-label="simple table">
             <TableHead style={{backgroundColor: '#d1d1d1'}}>
               <TableRow>
-                <TableCell align="center">Tanggal</TableCell>
-                <TableCell align="center">Nama Kelas</TableCell>
-                <TableCell align="center">Mata Pelajaran</TableCell>
+                <TableCell align="left">Tanggal</TableCell>
+                <TableCell align="left">Nama Kelas</TableCell>
+                <TableCell align="left">Mata Pelajaran</TableCell>
                 <TableCell align="center">Jumlah Siswa</TableCell>
                 <TableCell align="center">Bukti KBM</TableCell>
-                <TableCell align="center">Keluhan</TableCell>
+                <TableCell align="left">Keluhan</TableCell>
+                <TableCell align="center">Aksi</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.sort((a, b) => 
                 dayjs.utc(a.date).isAfter(dayjs.utc(b.date)) ? 1 : -1
               ).map((row, index) => 
-                <DocumentRow row={row} key={row.id} index={index}/>
+                <DocumentRow 
+                  row={row} 
+                  key={row.id} 
+                  index={index} 
+                  removeDocumentButtonHandler={removeDocumentButtonHandler}
+                  // removeAbsenceButtonHandler={removeAbsenceButtonHandler}
+                />
               )}
             </TableBody>
           </Table>
