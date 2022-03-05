@@ -100,6 +100,10 @@ function Home() {
         localStorage.removeItem('accessToken')
         navigate('/')
     }
+
+    useEffect(() => {
+        !localStorage.getItem('accessToken') && navigate('/')
+    }, [])
     
     //redirect to login page if accessToken is not found
     !localStorage.getItem('accessToken') && navigate('/')

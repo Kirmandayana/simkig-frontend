@@ -29,7 +29,7 @@ const StudentAttendanceSumsChart = ({attendances}) => {
 
   //Line Chart
   const dataLineChart = {
-    labels: attendances.dates,
+    labels: attendances.dates.map(el => dayjs(el).date()),
     datasets: [{
       label: 'Total Kehadiran Siswa',
       data: attendances.data.map(el => el.count),
@@ -74,10 +74,9 @@ const AbsenceRow = ({row, index}) => {
   return (
     <TableRow key={index}>
       <TableCell component="th" scope="row" align="center">
-        {row.username}
+        {row.NIP}
       </TableCell>
       <TableCell align="center">{row.fullName}</TableCell>
-      <TableCell align="center">{row.alasan}</TableCell>
     </TableRow>
   )
 }
@@ -119,27 +118,33 @@ function Dashboard() {
   }, [])
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column'}}>
+    <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
     
-      <div style={{display: 'flex'}}>
-        <Paper style={{display: 'flex', flexDirection: 'column'}}>
+      <div style={{display: 'flex', height: '28em'}}>
+        <Paper style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '25em'}}>
           <Typography style={{paddingLeft: '1em', alignSelf: 'center'}}>Kehadiran Guru hari ini</Typography>
           <AbsencePieChart absences={absences}/>
         </Paper>
 
-        <Paper style={{flexGrow: 1, marginLeft: '1em'}}>
+        <Paper style={{display: 'flex', flexGrow: 1, marginLeft: '1em', alignItems: 'center'}}>
           <StudentAttendanceSumsChart attendances={studentAttendance}/>
         </Paper>
       </div>
 
-      <div style={{marginTop: '1em'}}>
+      <div style={{display: 'flex', flexDirection: 'row', marginTop: '1em'}}>
+        <Paper style={{display: 'flex', flexDirection: 'column', width: '41em', marginRight: '1.25em', paddingTop: '2em'}}>
+          <Typography style={{paddingLeft: '1em', alignSelf: 'center', textAlign: 'center'}}>
+            Tabel berikut menunjukkan <br/>
+            daftar guru-guru yang tidak hadir pada hari ini
+          </Typography>
+        </Paper>
+
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: '63.5em' }} aria-label="customized table">
+          <Table aria-label="customized table">
             <TableHead style={{backgroundColor: '#d1d1d1'}}>
               <TableRow>
-                <TableCell align="center">NIK</TableCell>
+                <TableCell align="center">NIP</TableCell>
                 <TableCell align="center">Nama Guru</TableCell>
-                <TableCell align="center">Keterangan</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

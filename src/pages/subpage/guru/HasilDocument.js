@@ -45,7 +45,7 @@ const getDocumentList = async (rangeStart, rangeEnd) => {
   if(response.status === 200)
     return await response.json().then(res => res.sort((a, b) => dayjs(a.date).isBefore(dayjs(b.date))))
   else
-    throw new Error(await response.json())
+    throw new Error(await response.json().then(err => {console.log(err); return err}))
 }
 
 
@@ -105,7 +105,7 @@ const FilterBar = ({setData, month, setMonth, year, setYear}) => {
           if(!month || !year) return alert('Mohon isi bulan dan tahun dengan benar')
 
           getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1])
-          .then(res => setData(res))
+          .then(res => {console.log(res); setData(res)})
           .catch(err => {console.log(err); alert(err?.result)})
         }}
       >Tampilkan</Button>
@@ -206,7 +206,7 @@ function HasilDocument() {
       if(res.status === 200) return res.json().then(res => alert(res?.result))
       else return res.json().then(msg => alert(msg?.result))
     })
-    .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res)))
+    .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => {console.log(res); setData(res)}))
   }
 
   // const removeAbsenceButtonHandler = (row) => {
@@ -231,7 +231,7 @@ function HasilDocument() {
       getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[0],
       getMonthRange(new Date().getMonth() + 1, new Date().getFullYear())[1],
     )
-    .then(res => setData(res))
+    .then(res => {console.log(res); setData(res)})
     .catch(err => {console.log(err); alert(err?.result)})
   }, [])
 
@@ -253,7 +253,7 @@ function HasilDocument() {
             </TableHead>
             <TableBody>
               {data.sort((a, b) => 
-                dayjs.utc(a.date).isAfter(dayjs.utc(b.date)) ? 1 : -1
+                dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1
               ).map((row, index) => 
                 <DocumentRow 
                   row={row} 
