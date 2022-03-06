@@ -48,7 +48,7 @@ function NavBar() {
                 <Toolbar>
                     {/* LogoArea */}
                     <div style={{width: '5em'}}>
-                        Logo
+                        <img src={require('../assets/logo.png')} alt="logo" style={{width: '60%'}}/>
                     </div>
 
                     <Typography style={{marginLeft: '2em', flexGrow: 1}} variant='h5'>Sistem Informasi Manajemen Kinerja Guru</Typography>
