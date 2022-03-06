@@ -113,7 +113,7 @@ const FilterBar = ({setData, month, setMonth, year, setYear}) => {
   )
 }
 
-const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsenceButtonHandler}) => {
+const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
   const [img, setImg] = useState('')
   
   useEffect(() => {
@@ -143,7 +143,7 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsenceButt
   return (
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
-        {dayjs(row.date).format(row.photoFilename ? 'YYYY-MM-DD HH:mm' : 'YYYY-MM-DD')}
+        {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})}
       </TableCell>
       {
         row.photoFilename ?
@@ -164,25 +164,7 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsenceButt
           </TableCell>
         </>
         :
-        row.reason ?
-        <>
-          <TableCell align="left"></TableCell>
-          <TableCell align="left"></TableCell>
-          <TableCell align="center">Beralasan: <b><i>{row.reason}</i></b></TableCell>
-          <TableCell align="center"></TableCell>
-          <TableCell align="center"></TableCell>
-          <TableCell align="center">
-            {/* <Button
-              variant='contained'
-              color='primary'
-              onClick={() => removeAbsenceButtonHandler(row)}
-            >Hapus</Button> */}
-          </TableCell>
-        </>
-        :
-        <>
-          <TableCell align="center" colSpan={6}>Belum diisi</TableCell>
-        </>
+        <TableCell align="center" colSpan={6}>Belum diisi</TableCell>
       }
     </TableRow>
   )
@@ -208,22 +190,6 @@ function HasilDocument() {
     })
     .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => {console.log(res); setData(res)}))
   }
-
-  // const removeAbsenceButtonHandler = (row) => {
-  //   fetch(BACKEND_URL + `/api/absence/removeAbsence`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'access-token': localStorage.getItem('accessToken')
-  //     },
-  //     body: JSON.stringify({absenceId: row.id})
-  //   })
-  //   .then(res => {
-  //     if(res.status === 200) return res.json().then(res => alert(res?.result))
-  //     else return res.json().then(msg => alert(msg?.result))
-  //   })
-  //   .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res)))
-  // }
 
   useState(() => {
     //fetch the data for current month upon mounting
@@ -260,7 +226,6 @@ function HasilDocument() {
                   key={row.id} 
                   index={index} 
                   removeDocumentButtonHandler={removeDocumentButtonHandler}
-                  // removeAbsenceButtonHandler={removeAbsenceButtonHandler}
                 />
               )}
             </TableBody>

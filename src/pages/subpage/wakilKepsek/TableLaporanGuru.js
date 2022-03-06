@@ -156,7 +156,7 @@ const DocumentRow = ({row, listType, month, year, parentMethods}) => {
         {fullName}
       </TableCell>
       <TableCell align="center">
-        {dayjs(createdAt).fromNow()}
+        {dayjs.utc(createdAt).fromNow()}
       </TableCell>
       <TableCell align="center">
         <Button variant='contained' color='primary' onClick={

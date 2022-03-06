@@ -89,7 +89,7 @@ const DocumentRow = ({row, index}) => {
   return (
     <TableRow style={{backgroundColor, display: !row.photoFilename && 'none'}}>
       <TableCell component="th" scope="row" align="left">
-        {dayjs(row.date).format('YYYY-MM-DD HH:mm')}
+        {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})}
       </TableCell>
       {
         row.photoFilename ?
@@ -104,7 +104,7 @@ const DocumentRow = ({row, index}) => {
         </>
         :
         <>
-          <TableCell align="center" colSpan={5}>BELUM DI ISI</TableCell>
+          <TableCell align="center" colSpan={5}>Belum diisi</TableCell>
         </>
       }
     </TableRow>
