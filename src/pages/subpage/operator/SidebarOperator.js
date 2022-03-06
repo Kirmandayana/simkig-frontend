@@ -16,10 +16,10 @@ function SidebarOperator({handleSidebarClick, handleLogout}) {
             <img src={userIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
             <Typography>Manajemen User</Typography>
         </div>
-        <div style={{display: 'flex', flexDirection: 'row', height: '2.7em', cursor: 'pointer'}} onClick={() => handleSidebarClick('ManajemenServer')}>
+        {/* <div style={{display: 'flex', flexDirection: 'row', height: '2.7em', cursor: 'pointer'}} onClick={() => handleSidebarClick('ManajemenServer')}>
             <img src={serverIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
             <Typography>Manajemen Server</Typography>
-        </div>
+        </div> */}
         <div style={{display: 'flex', flexDirection: 'row', height: '2.7em', cursor: 'pointer'}} onClick={() => handleLogout()}>
             <img src={logOutIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}}/>
             <Typography>Keluar</Typography>

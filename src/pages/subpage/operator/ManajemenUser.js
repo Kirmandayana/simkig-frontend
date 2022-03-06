@@ -161,11 +161,13 @@ const SuntingUserDialog = ({open, selectedUser, gantiPasswordHandler, gantiTingk
           <TextField
             label='NIP'
             value={NIP}
-            onChange={e => setNIP(e.target.value)}
+            //make sure only numeric character is inputted
+            onChange={e => setNIP(e.target.value.replace(/[^0-9]/g, ''))}
           />
           <div style={{height: '0.5em'}}></div>
           <TextField
             label='Password'
+            type='password'
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
@@ -229,7 +231,6 @@ const WarningHapusUser = ({open, selectedUser, onClose}) => {
     </Dialog>
   )
 }
-
 
 function ManajemenUser() {
   const [namaUser, setNamaUser] = useState('')
@@ -379,7 +380,7 @@ function ManajemenUser() {
         <div style={{flexGrow: 1}}></div>
         <TextField label="nama user" value={namaUser} onChange={e => setNamaUser(e.target.value)}></TextField>
         <div style={{width: '1em'}}></div>
-        <TextField label="password" value={password} onChange={e => setPassword(e.target.value)}></TextField>
+        <TextField label="password" type='password' value={password} onChange={e => setPassword(e.target.value)}></TextField>
         <div style={{width: '1em'}}></div>
         <TextField label="nama lengkap" value={namaLengkap} onChange={e => setNamaLengkap(e.target.value)}></TextField>
         <div style={{width: '1em'}}></div>
@@ -399,7 +400,7 @@ function ManajemenUser() {
           </Select>
         </FormControl>
         <div style={{width: '1em'}}></div>
-        <TextField label="NIP" value={NIP} onChange={e => setNIP(e.target.value)}></TextField>
+        <TextField label="NIP" value={NIP} onChange={e => setNIP(e.target.value.replace(/[^0-9]/g, ''))}></TextField>
         <div style={{width: '1em'}}></div>
         <Button variant='contained' onClick={buatUserBaruHandler}>Buat user</Button>
         <div style={{flexGrow: 1}}></div>

@@ -127,7 +127,7 @@ function Home() {
                 <NavBar/>
             </div>
             {/* kontainer yang se pisah antara sidebar sblah kanan, dgn konten sblh kiri */}
-            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row'}}>
+            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
                 {/* sidebar */}
                 <div style={{width: '13em', marginRight: '1em', flexShrink: 0}}>
                     <Paper elevation={5}>
@@ -141,7 +141,7 @@ function Home() {
                 </div>
 
                 {/* konten */}
-                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex'}}>
+                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex', maxWidth: '85em'}}>
                     <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex'}}>
                         {contentPage}
                     </Paper>

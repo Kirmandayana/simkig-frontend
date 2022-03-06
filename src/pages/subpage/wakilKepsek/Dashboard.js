@@ -40,7 +40,7 @@ const StudentAttendanceSumsChart = ({attendances}) => {
   }
 
   return (
-    <Line data={dataLineChart} />
+    <Line data={dataLineChart} width='50em' height='25em'/>
   )
 }
 
@@ -126,34 +126,32 @@ function Dashboard() {
           <AbsencePieChart absences={absences}/>
         </Paper>
 
-        <Paper style={{display: 'flex', flexGrow: 1, marginLeft: '1em', alignItems: 'center'}}>
+        <Paper style={{display: 'flex', flexGrow: 1, marginLeft: '1em', alignItems: 'center', height: '28em'}}>
           <StudentAttendanceSumsChart attendances={studentAttendance}/>
         </Paper>
       </div>
 
-      <div style={{display: 'flex', flexDirection: 'row', marginTop: '1em'}}>
-        <Paper style={{display: 'flex', flexDirection: 'column', width: '41em', marginRight: '1.25em', paddingTop: '2em'}}>
+      <div style={{display: 'flex', flexDirection: 'column', marginTop: '1em'}}>
+        <Paper>
           <Typography style={{paddingLeft: '1em', alignSelf: 'center', textAlign: 'center'}}>
-            Tabel berikut menunjukkan <br/>
-            daftar guru-guru yang tidak hadir pada hari ini
+            Daftar guru-guru yang tidak hadir
           </Typography>
+          <TableContainer component={Paper}>
+            <Table aria-label="customized table">
+              <TableHead style={{backgroundColor: '#d1d1d1'}}>
+                <TableRow>
+                  <TableCell align="center">NIP</TableCell>
+                  <TableCell align="center">Nama Guru</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {absences ? absences.absentList.map((row, index) => (
+                  <AbsenceRow key={index} row={row} />
+                )) : <TableRow></TableRow>}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Paper>
-
-        <TableContainer component={Paper}>
-          <Table aria-label="customized table">
-            <TableHead style={{backgroundColor: '#d1d1d1'}}>
-              <TableRow>
-                <TableCell align="center">NIP</TableCell>
-                <TableCell align="center">Nama Guru</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {absences ? absences.absentList.map((row, index) => (
-                <AbsenceRow key={index} row={row} />
-              )) : <TableRow></TableRow>}
-            </TableBody>
-          </Table>
-        </TableContainer>
       </div>
 
     </div>

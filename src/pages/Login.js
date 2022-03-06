@@ -87,7 +87,8 @@ function Login() {
                                         loginButtonHandler()
                                 }}
                             />
-                            <Typography style={{margin: '0em 0em 1em 0em', alignSelf: 'end'}}>Lupa kata sandi?</Typography>
+                            {/* <Typography style={{margin: '0em 0em 1em 0em', alignSelf: 'end'}}>Lupa kata sandi?</Typography> */}
+                            <div style={{height: '1em'}}></div>
                             <Button 
                                 variant='contained' 
                                 color='primary' 
