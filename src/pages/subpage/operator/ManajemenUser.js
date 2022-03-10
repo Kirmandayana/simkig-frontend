@@ -2,81 +2,6 @@ import { Button, Dialog, Paper, Table, TableBody, TableCell, TableContainer, Tab
 import React, { useEffect, useState } from 'react'
 const { BACKEND_URL } = require('../../../globals')
 
-// const GantiPasswordDialog = ({open, selectedUser, onClose}) => {
-//   const [password, setPassword] = useState('')
-
-//   const gantiPasswordButtonHandler = () => {
-//     onClose({password})
-//     setPassword('')
-//   }
-
-//   return (
-//     <Dialog onClose={onClose} open={open}>
-//       <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0.5em'}}>
-//         <Typography variant='h6' style={{fontWeight: 'bold'}}>Ganti Password</Typography>
-//         {
-//           selectedUser &&
-//             <Typography>
-//               User Info: <br/>
-//               Nama: {selectedUser.fullName} <br/>
-//               ID: {selectedUser.id}
-//             </Typography>
-//         }
-//         <div style={{height: '1em'}}></div>
-//         <TextField 
-//           label='Password Baru'
-//           value={password}
-//           onChange={e => setPassword(e.target.value)}
-//         />
-//         <div style={{height: '1em'}}></div>
-//         <Button 
-//           variant='contained' 
-//           color='primary'
-//           onClick={gantiPasswordButtonHandler}
-//         >Ganti Password</Button>
-//       </div>
-//     </Dialog>
-//   )
-// }
-
-// const GantiTingkatAksesDialog = ({open, selectedUser, onClose}) => {
-//   const [tingkatAkses, setTingkatAkses] = useState('')
-
-//   const gantiTingkatAksesHandler = () => {
-//     onClose({tingkatAkses})
-//     setTingkatAkses('')
-//   }
-
-//   return (
-//     <Dialog onClose={onClose} open={open}>
-//       <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '0.5em'}}>
-//         <Typography variant='h6' style={{fontWeight: 'bold'}}>Ganti Tingkat Akses</Typography>
-//         {
-//           selectedUser &&
-//             <Typography>
-//               User Info: <br/>
-//               Nama: {selectedUser.fullName} <br/>
-//               ID: {selectedUser.id} <br/>
-//               Tingkat Akses: {selectedUser.accessLevel}
-//             </Typography>
-//         }
-//         <div style={{height: '1em'}}></div>
-//         <TextField 
-//           label='Tingkat Akses Baru'
-//           value={tingkatAkses}
-//           onChange={e => {setTingkatAkses(e.target.value.replace(/[^0-9]/g, ''))}}
-//         />
-//         <div style={{height: '1em'}}></div>
-//         <Button 
-//           variant='contained' 
-//           color='primary'
-//           onClick={gantiTingkatAksesHandler}
-//         >Ganti Tingkat Akses</Button>
-//       </div>
-//     </Dialog>
-//   )
-// }
-
 const tingkatAksesToJabatan = {
   0: 'Guru',
   1: 'Wakil Kepala Sekolah',
@@ -124,7 +49,6 @@ const SuntingUserDialog = ({open, selectedUser, gantiPasswordHandler, gantiTingk
         onClose()
         setUsername('')
         setNama('')
-        // setJabatan('')
         setTingkatAkses('')
         setNIP('')
         setPassword('')
@@ -153,11 +77,6 @@ const SuntingUserDialog = ({open, selectedUser, gantiPasswordHandler, gantiTingk
             onChange={e => setNama(e.target.value)}
           />
           <div style={{height: '0.5em'}}></div>
-          {/* <TextField
-            label='Jabatan'
-            value={jabatan}
-            onChange={e => setJabatan(e.target.value)}
-          /> */}
           <TextField
             label='NIP'
             value={NIP}
@@ -172,11 +91,6 @@ const SuntingUserDialog = ({open, selectedUser, gantiPasswordHandler, gantiTingk
             onChange={e => setPassword(e.target.value)}
           />
           <div style={{height: '0.5em'}}></div>
-          {/* <TextField
-            label='Tingkat Akses'
-            value={tingkatAkses}
-            onChange={e => setTingkatAkses(e.target.value.replace(/[^0-9]/g, ''))}
-          /> */}
           <FormControl>
             <InputLabel id="select-tingkat-akses">Tingkat Akses</InputLabel>
             <Select 
@@ -236,12 +150,9 @@ function ManajemenUser() {
   const [namaUser, setNamaUser] = useState('')
   const [password, setPassword] = useState('')
   const [namaLengkap, setNamaLengkap] = useState('')
-  // const [jabatan, setJabatan] = useState('')
   const [tingkatAkses, setTingkatAkses] = useState('')
   const [NIP, setNIP] = useState('')
   const [daftarUser, setDaftarUser] = useState([])
-  // const [gantiPasswordDialog, setGantiPasswordDialog] = useState(false)
-  // const [gantiTingkatAksesDialog, setGantiTingkatAksesDialog] = useState(false)
   const [suntingUserDialog, setSuntingUserDialog] = useState(false)
   const [warningHapusUser, setWarningHapusUser] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
@@ -263,8 +174,6 @@ function ManajemenUser() {
   }, [])
 
   const gantiPasswordHandler = pw => {
-    // setGantiPasswordDialog(false)
-
     if(!pw.password) return
     else if(pw.password.length < 1) {
       alert("Password tidak boleh kosong")
@@ -289,8 +198,6 @@ function ManajemenUser() {
   }
 
   const gantiTingkatAksesHandler = ta => {
-    // setGantiTingkatAksesDialog(false)
-
     if(ta.tingkatAkses.length < 1) {
       alert("Tingkat Akses tidak boleh kosong")
       return
@@ -345,6 +252,8 @@ function ManajemenUser() {
             setNamaUser('')
             setPassword('')
             setNamaLengkap('')
+            setTingkatAkses('')
+            setNIP('')
           })
         else
           rsp.json().then(data => alert("User gagal dibuat: " + data.result)) // jika gagal, tampilkan pesan
@@ -384,8 +293,6 @@ function ManajemenUser() {
         <div style={{width: '1em'}}></div>
         <TextField label="nama lengkap" value={namaLengkap} onChange={e => setNamaLengkap(e.target.value)}></TextField>
         <div style={{width: '1em'}}></div>
-        {/* <TextField label="jabatan" value={jabatan} onChange={e => setJabatan(e.target.value)}></TextField>
-        <div style={{width: '1em'}}></div> */}
         <FormControl style={{width: '10em'}}>
           <InputLabel id="select-tingkat-akses">Tingkat Akses</InputLabel>
           <Select 
@@ -443,33 +350,6 @@ function ManajemenUser() {
                       variant='contained'
                       onClick={() => {setSelectedUser(row); setSuntingUserDialog(true)}}
                     >Sunting</Button>
-                    {/* change password button */}
-                    {/* <Button 
-                      variant='contained'
-                      style={{marginBottom: '0.5em'}}
-                      onClick={() => {
-                        setSelectedUser(row)
-                        setGantiPasswordDialog(true)
-                      }}
-                    >Ganti Password</Button> */}
-                    {/* change access level button */}
-                    {/* <Button 
-                      variant='contained'
-                      style={{marginBottom: '0.5em'}}
-                      onClick={() => {
-                        setSelectedUser(row)
-                        setGantiTingkatAksesDialog(true)
-                      }}
-                    >Ganti Tingkat Akses</Button> */}
-                    {/* delete user button */}
-                    {/* <Button 
-                      variant='contained'
-                      style={{backgroundColor: 'red'}}
-                      onClick={() => {
-                        setSelectedUser(row)
-                        setWarningHapusUser(true)
-                      }}
-                    >Hapus</Button> */}
                   </TableCell>
                 </TableRow>
               ))
@@ -477,16 +357,6 @@ function ManajemenUser() {
           </TableBody>
         </Table>
       </TableContainer>
-      {/* <GantiPasswordDialog
-        open={gantiPasswordDialog}
-        selectedUser={selectedUser}
-        onClose={gantiPasswordHandler}
-      />
-      <GantiTingkatAksesDialog
-        open={gantiTingkatAksesDialog}
-        selectedUser={selectedUser}
-        onClose={gantiTingkatAksesHandler}
-      />*/}
       <SuntingUserDialog
         open={suntingUserDialog}
         selectedUser={selectedUser}
