@@ -13,6 +13,9 @@ import SidebarOperator from './subpage/operator/SidebarOperator'
 import OperatorDashboard from './subpage/operator/Dashboard'
 import ManajemenUser from './subpage/operator/ManajemenUser'
 import ManajemenServer from './subpage/operator/ManajemenServer'
+import ProfilGuru from './subpage/guru/Profil';
+import ProfilWakil from './subpage/guru/Profil';
+
 
 const pageAccessHandler = (role, page, handleClick, handleLogout) => {
     let contentPage = <div>Page not defined</div>
@@ -20,7 +23,7 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
 
     switch(role) {
         case 0:
-            sidebar = <SidebarGuru handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+            sidebar = <SidebarGuru handleSidebarClick={handleClick} currentPage={page} handleLogout={handleLogout}/>
 
             switch(page) {
                 case 'Dashboard':
@@ -32,13 +35,16 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                 case 'HasilDocument':
                     contentPage = <HasilDocument/>
                     break
+                case 'Profil':
+                    contentPage = <ProfilGuru/>
+                    break
                 default:
                     break
             }
 
             break
         case 1:
-            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} currentPage={page}  handleLogout={handleLogout}/>
 
             switch(page) {
                 case 'Dashboard':
@@ -46,6 +52,9 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                     break
                 case 'LihatLaporan':
                     contentPage = <TabelLaporanGuruContainer/>
+                    break
+                case 'Profil':
+                    contentPage = <ProfilWakil/>
                     break
                 default:
                     break
@@ -53,7 +62,7 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
 
             break
         case 2:
-            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+            sidebar = <SidebarWakilKepsek handleSidebarClick={handleClick} currentPage={page}  handleLogout={handleLogout}/>
 
             switch(page) {
                 case 'Dashboard':
@@ -62,13 +71,16 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                 case 'LihatLaporan':
                     contentPage = <TabelLaporanGuruContainer/>
                     break
+                case 'Profil':
+                    contentPage = <ProfilWakil/>
+                    break
                 default:
                     break
             }
 
             break
         case 3:
-            sidebar = <SidebarOperator handleSidebarClick={handleClick} handleLogout={handleLogout}/>
+            sidebar = <SidebarOperator handleSidebarClick={handleClick} currentPage={page} handleLogout={handleLogout}/>
 
             switch(page) {
                 case 'Dashboard':
@@ -124,7 +136,7 @@ function Home() {
     return (
         <div>
             <div style={{backgroundColor: 'cyan', display: 'flex', flexDirection: 'column', height: '4em'}}>
-                <NavBar/>
+                <NavBar currentPage={currentPage}/>
             </div>
             {/* kontainer yang se pisah antara sidebar sblah kanan, dgn konten sblh kiri */}
             <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>

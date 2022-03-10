@@ -55,6 +55,12 @@ const UnggahDokumenTab = () => {
       
       const date = dayjs(dateVal)
 
+      //if the date is in future, show alert
+      if(date.isAfter(dayjs())) {
+         alert('Tidak dapat mengupload pada tanggal dan waktu di masa depan')
+         return
+      }
+
       data.append('date', date.format('YYYY-MM-DD'))
       data.append('dateHour', date.get('h'))
       data.append('dateMinute', date.get('m'))

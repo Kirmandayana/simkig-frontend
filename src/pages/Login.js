@@ -51,7 +51,7 @@ function Login() {
         <div style={{width: '100%', height: window.innerHeight, display: 'flex', flexDirection: 'column'}}>
             {/* NavBar Area */}
             <div style={{backgroundColor: 'cyan', display: 'flex', flexDirection: 'column'}}>
-                <NavBar/>
+                <NavBar currentPage={''}/>
             </div>
 
             {/* Login Area */}
