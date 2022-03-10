@@ -13,7 +13,8 @@ import {
   MenuItem, 
   Select, 
   InputLabel, 
-  FormControl 
+  FormControl, 
+  Typography
 } from '@mui/material';
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
@@ -64,6 +65,7 @@ const FilterBar = ({setData, month, setMonth, year, setYear}) => {
       marginBottom: '1em'
     }}>
       {/* select bulan */}
+      <Typography variant='h6' style={{alignSelf: 'center', marginLeft: '1em'}}>Daftar Laporan KBM</Typography>
       <div style={{flexGrow: 1}}></div>
       <FormControl style={{width: '10em'}}>
         <InputLabel id="select-bulan">Bulan</InputLabel>
@@ -135,10 +137,10 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
   //zebra coloring on table
   if(index % 2 === 0)
     if(!row.photoFilename && !row.reason) backgroundColor = '#ffcccc'
-    else backgroundColor = '#e0e0e0'
+    else backgroundColor = '#aecbd6'
   else
     if(!row.photoFilename && !row.reason) backgroundColor = '#ffb8b8'
-    else backgroundColor = '#ffffff'
+    else backgroundColor = '#bfd4db'
 
   return (
     <TableRow style={{backgroundColor}}>
@@ -158,7 +160,7 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
           <TableCell align="center">
             <Button
               variant='contained'
-              color='primary'
+              color='error'
               onClick={() => removeDocumentButtonHandler(row)}
             >Hapus</Button>
           </TableCell>
@@ -205,8 +207,8 @@ function HasilDocument() {
     <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center', marginTop: '1em'}}>
       <FilterBar setData={setData} month={month} setMonth={setMonth} year={year} setYear={setYear}/>
       <TableContainer component={Paper} style={{flexGrow: 1}}>
-          <Table sx={{ minWidth: '63.5em' }} aria-label="simple table">
-            <TableHead style={{backgroundColor: '#d1d1d1'}}>
+          <Table sx={{ minWidth: '50em' }} aria-label="simple table">
+            <TableHead style={{backgroundColor: '#78a2cc'}}>
               <TableRow>
                 <TableCell align="left">Tanggal</TableCell>
                 <TableCell align="left">Nama Kelas</TableCell>

@@ -190,7 +190,7 @@ function TableLaporanGuru({setSelectedUser, setSelectedMonth, setSelectedYear}) 
         {/* table */}
         <div style={{marginTop: '1em'}}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: '63.5em' }} aria-label="customized table">
+            <Table sx={{ minWidth: '50em' }} aria-label="customized table">
               <TableHead style={{backgroundColor: '#d1d1d1'}}>
                 <TableRow>
                   <TableCell align="center">Nama Guru</TableCell>

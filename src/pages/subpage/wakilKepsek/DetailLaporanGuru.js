@@ -80,14 +80,14 @@ const DocumentRow = ({row, index}) => {
 
   //zebra coloring on table
   if(index % 2 === 0)
-    if(!row.photoFilename) backgroundColor = '#ffcccc'
-    else backgroundColor = '#e0e0e0'
+    if(!row.photoFilename && !row.reason) backgroundColor = '#ffcccc'
+    else backgroundColor = '#aecbd6'
   else
-    if(!row.photoFilename) backgroundColor = '#ffb8b8'
-    else backgroundColor = '#ffffff'
+    if(!row.photoFilename && !row.reason) backgroundColor = '#ffb8b8'
+    else backgroundColor = '#bfd4db'
 
   return (
-    <TableRow style={{backgroundColor, display: !row.photoFilename && 'none'}}>
+    <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
         {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})}
       </TableCell>
@@ -192,7 +192,7 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
         {/* Table */}
         <div style={{marginTop: '1em'}}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: '63.5em' }} aria-label="simple table">
+            <Table sx={{ minWidth: '50em' }} aria-label="simple table">
               <TableHead style={{backgroundColor: '#d1d1d1'}}>
                 <TableRow>
                   <TableCell align="center">Tanggal</TableCell>
