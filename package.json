@@ -1,6 +1,5 @@
 {
   "name": "simkig-frontend",
-  "homepage": "/cumacoba",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -24,7 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=false BUILD_PATH='./build/cumacoba' react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false BUILD_PATH='./build' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
