@@ -144,9 +144,12 @@ const DocumentRow = ({row, index, listType, month, year, parentMethods}) => {
   console.log(row)
 
   if (listType === 'latest') {
-    fullName = row.User.fullName
-    createdAt = row.createdAt
-    user = row.User
+    // fullName = row.User.fullName
+    // createdAt = row.createdAt
+    // user = row.User
+    fullName = row.fullName
+    createdAt = row.KBM_Documents[0]?.createdAt
+    user = row
   } else {
     fullName = row.fullName
     createdAt = row.KBM_Documents[0]?.createdAt
@@ -162,9 +165,7 @@ const DocumentRow = ({row, index, listType, month, year, parentMethods}) => {
     backgroundColor = '#bfd4db'
 
   useEffect(() => {
-    const profilePicture = listType === 'latest' ? row.User.profilePicture : row.profilePicture
-
-    fetch(BACKEND_URL + '/profiles/' + profilePicture, {
+    fetch(BACKEND_URL + '/profiles/' + row.profilePicture, {
       headers: {
         'access-token': localStorage.getItem('accessToken')
       }
