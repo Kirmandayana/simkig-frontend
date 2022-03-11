@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Paper, Typography } from '@mui/material';
+import { TextField, Button, Paper, Typography, ThemeProvider, createTheme } from '@mui/material';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import loginArtwork from '../../../assets/loginArtwork.png';
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#000000',
+    },
+    secondary: {
+      main: '#ffffff'
+    }
+  }
+})
 
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
@@ -113,6 +124,7 @@ const DocumentRow = ({row, index}) => {
 
 function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelectedUser}) {
   const [data, setData] = useState([])
+  const [teacherProfilePic, setTeacherProfilePic] = useState('')
 
   const exportDocumentButtonHandler = () => {
     fetch(BACKEND_URL + `/api/document/exportDocument`, {
@@ -146,7 +158,7 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
     .catch(err => console.log(err))
   }
 
-  useState(() => {
+  useEffect(() => {
     //fetch the data for current month upon mounting
     fetch(BACKEND_URL + `/api/document/getDocumentList`, {
       method: 'POST',
@@ -166,13 +178,20 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
       else
         return res.json().then(msg => console.log(msg))
     })
-    
+
+    fetch(BACKEND_URL + `/profiles/${selectedUser.profilePicture}`, {
+      headers: {
+        'access-token': localStorage.getItem('accessToken')
+      }
+    })
+    .then(res => res.blob())
+    .then(blob => setTeacherProfilePic(URL.createObjectURL(blob)))
   }, [])
 
   return (
     <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center'}}>
         
-        <div style={{display: 'flex', flexDirection: 'column', width: '100%', paddingLeft:'2em' }}>
+        {/* <div style={{display: 'flex', flexDirection: 'column', width: '100%', paddingLeft:'2em' }}>
           <Button variant='contained' color='primary' style={{width: '5em', marginBottom: '1em'}}
             onClick={() => setSelectedUser(undefined)}
           >Kembali</Button>
@@ -187,13 +206,83 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
               onClick={exportDocumentButtonHandler}
             >Ekspor</Button>
           }
+        </div> */}
+        <div style={{display: 'flex'}}>
+          <Paper style={{overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#18A0FB', padding: '1em', flex: 1}} elevation={9}>
+            <ThemeProvider theme={theme}>
+              <Typography style={{fontWeight: 'bold', marginBottom: '1em'}}>Detail Laporan</Typography>
+              <Typography style={{flex: 1}}>Anda sedang melihat detail laporan KBM dari seorang guru. Tekan tombol Kembali untuk berpindah ke daftar guru, dan tombol Ekspor untuk mengekspor laporan dalam bentuk file <i>.docx</i></Typography>
+              <Button 
+                variant='outlined'
+                onClick={() => setSelectedUser(undefined)}
+                style={{
+                  marginTop: '1em',
+                  width: '15.37em',
+                  marginLeft: 'auto'
+                }}
+              >
+                Kembali ke Daftar Guru
+              </Button>
+              <Button 
+                variant='contained'
+                color='secondary'
+                elevation={10}
+                onClick={exportDocumentButtonHandler}
+                style={{
+                  marginTop: '1em',
+                  width: '15.37em',
+                  marginLeft: 'auto'
+                }}
+              >
+                Ekspor Laporan
+              </Button>
+            </ThemeProvider>
+          </Paper>
+
+          <div style={{width: '1em'}}></div>
+
+          <Paper style={{overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1em', flex: 1.25}} elevation={9}>
+            {/* <ThemeProvider theme={theme}> */}
+              <Typography color='primary' style={{fontWeight: 'bold', marginBottom: '1em'}}>Informasi Guru dan Laporan</Typography>
+              <div style={{display: 'flex', flexGrow: 1}}>
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 0.75}}>
+                  <img src={teacherProfilePic} style={{width: '100%', borderRadius: '50%', padding: '1em', boxSizing: 'border-box'}} alt=''/>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column', flex: 2}}>
+                  <Typography style={{fontWeight: 'bold', flex: 1}}>Guru</Typography>
+                  <div style={{display: 'flex', padding: '0em 0em 0.75em 0em'}}>
+                    <Typography style={{flex: 1}}>Nama Lengkap</Typography>
+                    <Typography style={{flex: 0.125}}>:</Typography>
+                    <Typography style={{flex: 1}}>{selectedUser.fullName}</Typography>
+                  </div>
+                  <div style={{display: 'flex', padding: '0em 0em 0.75em 0em'}}>
+                    <Typography style={{flex: 1}}>NIP</Typography>
+                    <Typography style={{flex: 0.125}}>:</Typography>
+                    <Typography style={{flex: 1}}>{selectedUser.NIP}</Typography>
+                  </div>
+                  <div style={{height: '0.0625em', backgroundColor: 'rgba(0, 0, 0, 0.25)'}}></div>
+                  <Typography style={{fontWeight: 'bold', flex: 1}}>Laporan KBM</Typography>
+                  <div style={{display: 'flex', padding: '0em 0em 0.75em 0em'}}>
+                    <Typography style={{flex: 1}}>Bulan</Typography>
+                    <Typography style={{flex: 0.125}}>:</Typography>
+                    <Typography style={{flex: 1}}>{monthNumber[selectedMonth]}</Typography>
+                  </div>
+                  <div style={{display: 'flex', padding: '0em 0em 0.75em 0em'}}>
+                    <Typography style={{flex: 1}}>Tahun</Typography>
+                    <Typography style={{flex: 0.125}}>:</Typography>
+                    <Typography style={{flex: 1}}>{selectedYear}</Typography>
+                  </div>
+                </div>
+              </div>
+            {/* </ThemeProvider> */}
+          </Paper>
         </div>
 
         {/* Table */}
-        <div style={{marginTop: '1em'}}>
+        <div style={{marginTop: '1em', width: '100%'}}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: '50em' }} aria-label="simple table">
-              <TableHead style={{backgroundColor: '#d1d1d1'}}>
+            <Table aria-label="simple table">
+              <TableHead style={{backgroundColor: '#78a2cc'}}>
                 <TableRow>
                   <TableCell align="center">Tanggal</TableCell>
                   <TableCell align="center">Nama Kelas</TableCell>

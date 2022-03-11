@@ -6,7 +6,7 @@ function Dashboard() {
   return (
     <div style={{display:'flex', flexDirection: 'row', flexGrow:1}}>
       <div style={{paddingLeft: '9em', marginTop: 'auto', marginBottom: 'auto'}}>
-        <Typography style={{fontSize: '1.5em', fontWeight: 'bold'}}>Selamat Datang di Sistem Informasi Manajemen Kinerja Guru</Typography>
+        <Typography style={{fontSize: '1.5em', fontWeight: 'bold'}}>Selamat Datang di SIMKIG KBM</Typography>
       </div>
 
       <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '5em'}}>

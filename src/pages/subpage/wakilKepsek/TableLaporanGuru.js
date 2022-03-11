@@ -14,6 +14,7 @@ import {
   InputLabel, 
   FormControl 
 } from '@mui/material';
+import {styled} from '@mui/material/styles'
 import { useState } from 'react';
 const dayjs = require('dayjs')
 require('dayjs/locale/id')
@@ -23,6 +24,7 @@ const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
 dayjs.locale('id')
+
 
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
@@ -84,7 +86,7 @@ const FilterBar = ({setTeachersList, month, setMonth, year, setYear}) => {
     <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', width: '100%'}}>
       <TextField 
         id='outline-basic' 
-        placeholder='Cari berdasarkan nama guru' 
+        label='Cari berdasarkan nama guru' 
         style={{width: '20em'}} 
         value={teacherName}
         onChange={(e) => setTeacherName(e.target.value.replace(/[^a-zA-Z ]/g, ''))}/>
@@ -136,7 +138,8 @@ const FilterBar = ({setTeachersList, month, setMonth, year, setYear}) => {
   )
 }
 
-const DocumentRow = ({row, listType, month, year, parentMethods}) => {
+const DocumentRow = ({row, index, listType, month, year, parentMethods}) => {
+  const [profilePic, setProfilePic] = useState('')
   let fullName, createdAt, user
   console.log(row)
 
@@ -146,13 +149,43 @@ const DocumentRow = ({row, listType, month, year, parentMethods}) => {
     user = row.User
   } else {
     fullName = row.fullName
-    createdAt = row.KBM_Documents[0].createdAt
+    createdAt = row.KBM_Documents[0]?.createdAt
     user = row
   }
 
+  let backgroundColor
+
+  //zebra coloring on table
+  if(index % 2 === 0)
+    backgroundColor = '#aecbd6'
+  else
+    backgroundColor = '#bfd4db'
+
+  useEffect(() => {
+    const profilePicture = listType === 'latest' ? row.User.profilePicture : row.profilePicture
+
+    fetch(BACKEND_URL + '/profiles/' + profilePicture, {
+      headers: {
+        'access-token': localStorage.getItem('accessToken')
+      }
+    })
+    .then(res => res.blob())
+    .then(res => setProfilePic(URL.createObjectURL(res)))
+  }, [])
+
   return (
-    <TableRow>
+    <TableRow style={{backgroundColor: backgroundColor}}>
       <TableCell component="th" scope="row" align="center">
+        <img 
+          src={profilePic}
+          style={{
+            width: '3em',
+            borderRadius: '50%',
+          }}
+          alt=''
+        />
+      </TableCell>
+      <TableCell align="center">
         {fullName}
       </TableCell>
       <TableCell align="center">
@@ -184,29 +217,30 @@ function TableLaporanGuru({setSelectedUser, setSelectedMonth, setSelectedYear}) 
   }, [])
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1, alignItems: 'center'}}>
-        <FilterBar setTeachersList={setTeachersList} month={month} setMonth={setMonth} year={year} setYear={setYear} />
+    <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1, alignItems: 'center', position: 'relative'}}>
+      <FilterBar setTeachersList={setTeachersList} month={month} setMonth={setMonth} year={year} setYear={setYear} />
 
-        {/* table */}
-        <div style={{marginTop: '1em'}}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: '50em' }} aria-label="customized table">
-              <TableHead style={{backgroundColor: '#d1d1d1'}}>
-                <TableRow>
-                  <TableCell align="center">Nama Guru</TableCell>
-                  <TableCell align="center">Unggahan Terakhir</TableCell>
-                  <TableCell align="center">Aksi</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {teachersList.value && teachersList.value.map((row, index) => (
-                  <DocumentRow key={index} row={row} listType={teachersList.type} month={month} year={year} parentMethods={{setSelectedUser, setSelectedMonth, setSelectedYear}}/>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
-        
+      {/* table */}
+      <div style={{marginTop: '1em', zIndex: 1}}>
+        <TableContainer component={Paper}>
+          <Table sx={{ minWidth: '60em' }} aria-label="customized table">
+            <TableHead style={{backgroundColor: '#78a2cc'}}>
+              <TableRow>
+                <TableCell align="center"></TableCell>
+                <TableCell align="center">Nama Guru</TableCell>
+                <TableCell align="center">Unggahan Terakhir</TableCell>
+                <TableCell align="center">Aksi</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {teachersList.value && teachersList.value.map((row, index) => (
+                <DocumentRow key={index} index={index} row={row} listType={teachersList.type} month={month} year={year} parentMethods={{setSelectedUser, setSelectedMonth, setSelectedYear}}/>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+      
     </div>
   );
 }

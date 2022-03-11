@@ -107,7 +107,12 @@ function NavBar({currentPage}) {
                         <img src={require('../assets/logo.png')} alt="logo" style={{width: '60%'}}/>
                     </div>
 
-                    <Typography style={{marginLeft: '2em', flexGrow: 1}} variant='h5'>Sistem Informasi Manajemen Kinerja Guru</Typography>
+                    {
+                        currentPage !== 'Login' &&
+                        <Typography style={{marginLeft: '0em', flexGrow: 1}} variant='h5'>
+                            SIMKIG <b>KBM</b>
+                        </Typography>
+                    }
 
                     {
                         identifier.name !== '' &&

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {Paper, Typography} from '@mui/material'
 import {
   Chart as ChartJS, 
@@ -66,14 +66,43 @@ const AbsencePieChart = ({absences}) => {
   }
 
   return (
-    <Pie data={dataPieChart} style={{paddingBottom:'1em'}} />
+    <Pie data={dataPieChart} />
   )
 }
 
 const AbsenceRow = ({row, index}) => {
+  const [profilePic, setProfilePic] = useState('')
+
+  useEffect(() => {
+    fetch(BACKEND_URL + '/profiles/' + row.profilePicture, {
+      headers: {
+        'access-token': localStorage.getItem('accessToken')
+      }
+    })
+    .then(res => res.blob())
+    .then(res => setProfilePic(URL.createObjectURL(res)))
+  }, [])
+
+  let backgroundColor
+  //zebra coloring on table
+  if(index % 2 === 0)
+    backgroundColor = '#aecbd6'
+  else
+    backgroundColor = '#bfd4db'
+
   return (
-    <TableRow key={index}>
+    <TableRow style={{backgroundColor: backgroundColor}}>
       <TableCell component="th" scope="row" align="center">
+        <img 
+          src={profilePic}
+          style={{
+            width: '3em',
+            borderRadius: '50%',
+          }}
+          alt=''
+        />
+      </TableCell>
+      <TableCell align="center">
         {row.NIP}
       </TableCell>
       <TableCell align="center">{row.fullName}</TableCell>
@@ -118,15 +147,15 @@ function Dashboard() {
   }, [])
 
   return (
-    <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
+    <div style={{display: 'flex', flexDirection: 'column', width: '58em', marginLeft: 'auto', marginRight: 'auto'}}>
     
-      <div style={{display: 'flex', height: '28em'}}>
-        <Paper style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '25em'}}>
-          <Typography style={{paddingLeft: '1em', alignSelf: 'center'}}>Kehadiran Guru hari ini</Typography>
+      <div style={{display: 'flex', height: '22em'}}>
+        <Paper style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '22em', width: '18em'}}>
+          <Typography style={{alignSelf: 'center'}}>Kehadiran Guru hari ini</Typography>
           <AbsencePieChart absences={absences}/>
         </Paper>
 
-        <Paper style={{display: 'flex', flexGrow: 1, marginLeft: '1em', alignItems: 'center', height: '28em'}}>
+        <Paper style={{display: 'flex', width: '39em', marginLeft: '1em', alignItems: 'center', }}>
           <StudentAttendanceSumsChart attendances={studentAttendance}/>
         </Paper>
       </div>
@@ -138,15 +167,16 @@ function Dashboard() {
           </Typography>
           <TableContainer component={Paper}>
             <Table aria-label="customized table">
-              <TableHead style={{backgroundColor: '#d1d1d1'}}>
+              <TableHead style={{backgroundColor: '#78a2cc'}}>
                 <TableRow>
+                  <TableCell align='center'></TableCell>
                   <TableCell align="center">NIP</TableCell>
                   <TableCell align="center">Nama Guru</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {absences ? absences.absentList.map((row, index) => (
-                  <AbsenceRow key={index} row={row} />
+                  <AbsenceRow key={index} index={index} row={row} />
                 )) : <TableRow></TableRow>}
               </TableBody>
             </Table>

@@ -15,7 +15,7 @@ import ManajemenUser from './subpage/operator/ManajemenUser'
 import ManajemenServer from './subpage/operator/ManajemenServer'
 import ProfilGuru from './subpage/guru/Profil';
 import ProfilWakil from './subpage/guru/Profil';
-
+import background from '../assets/background.jpg';
 
 const pageAccessHandler = (role, page, handleClick, handleLogout) => {
     let contentPage = <div>Page not defined</div>
@@ -134,7 +134,7 @@ function Home() {
     )
     
     return (
-        <div>
+        <div style={{backgroundImage: `url(${background})`, overflowY: 'scroll', backgroundSize: 'cover', height: window.innerHeight}}>
             <div style={{backgroundColor: 'cyan', display: 'flex', flexDirection: 'column', height: '4em'}}>
                 <NavBar currentPage={currentPage}/>
             </div>
@@ -153,8 +153,8 @@ function Home() {
                 </div>
 
                 {/* konten */}
-                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex', maxWidth: '85em'}}>
-                    <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex'}}>
+                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex', maxWidth: '85em', marginBottom: '2em'}}>
+                    <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex', overflow: 'hidden'}}>
                         {contentPage}
                     </Paper>
                 </div>
