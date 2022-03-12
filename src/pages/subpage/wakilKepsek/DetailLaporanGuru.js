@@ -208,10 +208,12 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
           }
         </div> */}
         <div style={{display: 'flex'}}>
-          <Paper style={{overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#18A0FB', padding: '1em', flex: 1}} elevation={9}>
+          <Paper style={{overflow: 'hidden', display: 'flex', flexDirection: 'column', backgroundColor: '#18A0FB', padding: '1em', flex: getIdentifier().accessLevel !== 2 ? 1 : 0.5}} elevation={9}>
             <ThemeProvider theme={theme}>
               <Typography style={{fontWeight: 'bold', marginBottom: '1em'}}>Detail Laporan</Typography>
-              <Typography style={{flex: 1}}>Anda sedang melihat detail laporan KBM dari seorang guru. Tekan tombol Kembali untuk berpindah ke daftar guru, dan tombol Ekspor untuk mengekspor laporan dalam bentuk file <i>.docx</i></Typography>
+              <Typography style={{flex: 1}}>Anda sedang melihat detail laporan KBM dari seorang guru. Tekan tombol Kembali untuk berpindah ke daftar guru
+                {getIdentifier().accessLevel !== 2 && <span>, dan tombol Ekspor untuk mengekspor laporan dalam bentuk file <i>.docx</i></span>}
+              </Typography>
               <Button 
                 variant='outlined'
                 onClick={() => setSelectedUser(undefined)}
@@ -223,19 +225,22 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
               >
                 Kembali ke Daftar Guru
               </Button>
-              <Button 
-                variant='contained'
-                color='secondary'
-                elevation={10}
-                onClick={exportDocumentButtonHandler}
-                style={{
-                  marginTop: '1em',
-                  width: '15.37em',
-                  marginLeft: 'auto'
-                }}
-              >
-                Ekspor Laporan
-              </Button>
+              {
+                getIdentifier().accessLevel !== 2 &&
+                  <Button 
+                    variant='contained'
+                    color='secondary'
+                    elevation={10}
+                    onClick={exportDocumentButtonHandler}
+                    style={{
+                      marginTop: '1em',
+                      width: '15.37em',
+                      marginLeft: 'auto'
+                    }}
+                  >
+                    Ekspor Laporan
+                  </Button>
+              }
             </ThemeProvider>
           </Paper>
 
