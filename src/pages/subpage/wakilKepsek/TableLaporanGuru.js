@@ -141,7 +141,6 @@ const FilterBar = ({setTeachersList, month, setMonth, year, setYear}) => {
 const DocumentRow = ({row, index, listType, month, year, parentMethods}) => {
   const [profilePic, setProfilePic] = useState('')
   let fullName, createdAt, user
-  console.log(row)
 
   if (listType === 'latest') {
     // fullName = row.User.fullName
@@ -212,7 +211,10 @@ function TableLaporanGuru({setSelectedUser, setSelectedMonth, setSelectedYear}) 
 
   useEffect(() => {
     fetchTeacherList(new Date().getMonth() + 1, new Date().getFullYear())
-      // .then(data => {console.log(data); return data;})
+      .then(data => {
+        console.log(data);
+        return data;
+      })
       .then(data => setTeachersList(data))
       .catch(err => console.log(err))
   }, [])
@@ -234,8 +236,10 @@ function TableLaporanGuru({setSelectedUser, setSelectedMonth, setSelectedYear}) 
               </TableRow>
             </TableHead>
             <TableBody>
-              {teachersList.value && teachersList.value.map((row, index) => (
-                <DocumentRow key={index} index={index} row={row} listType={teachersList.type} month={month} year={year} parentMethods={{setSelectedUser, setSelectedMonth, setSelectedYear}}/>
+              {teachersList.value && teachersList.value
+              .sort((a, b) => a.KBM_Documents[0]?.createdAt < b.KBM_Documents[0]?.createdAt ? 1 : -1)
+              .map((row, index) => (
+                <DocumentRow key={row.id} index={index} row={row} listType={teachersList.type} month={month} year={year} parentMethods={{setSelectedUser, setSelectedMonth, setSelectedYear}}/>
               ))}
             </TableBody>
           </Table>

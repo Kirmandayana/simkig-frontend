@@ -176,7 +176,7 @@ function Dashboard() {
               </TableHead>
               <TableBody>
                 {absences ? absences.absentList.map((row, index) => (
-                  <AbsenceRow key={index} index={index} row={row} />
+                  <AbsenceRow key={row.id} index={index} row={row} />
                 )) : <TableRow></TableRow>}
               </TableBody>
             </Table>

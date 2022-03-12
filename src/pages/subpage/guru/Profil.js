@@ -76,13 +76,26 @@ function Profil() {
     return (
         <div style={{display:'flex', flexDirection: 'row', flexGrow:1, justifyContent: 'center', alignItems: 'center'}}>
             <div style={{width: '23em', height: '23em', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                <img src={img} style={{
-                    width: '80%', 
-                    height: '80%', 
-                    borderRadius: '50%',
-                    // drop shadow 
-                    boxShadow: '0px 10px 30px 0px rgba(0,0,0,0.2)'
-                }}/>
+                {
+                    img ?
+                        <img src={img} style={{
+                            width: '80%', 
+                            height: '80%', 
+                            borderRadius: '50%',
+                            // drop shadow 
+                            boxShadow: '0px 10px 30px 0px rgba(0,0,0,0.2)'
+                        }}/>
+                    :
+                        <div style={{
+                            width: '80%',
+                            height: '80%',
+                            borderRadius: '50%',
+                            backgroundColor: '#e0e0e0',
+                            // drop shadow
+                            boxShadow: '0px 10px 30px 0px rgba(0,0,0,0.2)'
+                        }}>
+                        </div>
+                }
                 <input
                     type='file'
                     ref={inputImgRef}
