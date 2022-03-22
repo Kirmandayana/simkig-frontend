@@ -178,6 +178,10 @@ function HasilDocument() {
   const [year, setYear] = useState(new Date().getFullYear())
 
   const removeDocumentButtonHandler = (row) => {
+    let confirmDelete = window.confirm('Apakah anda yakin ingin menghapus laporan ini?')
+
+    if(!confirmDelete) return
+
     fetch(BACKEND_URL + `/api/document/removeDocument`, {
       method: 'POST',
       headers: {
