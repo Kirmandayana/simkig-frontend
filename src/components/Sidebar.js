@@ -42,35 +42,8 @@ function Sidebar({routes, currentPage, handleSidebarClick, handleLogout}) {
                     onClick={() => handleSidebarClick(route.route)}
                     bgColor={currentPage === route.route ? 'white' : 'rgba(0, 0, 0, 0)'}
                 />
-                // <div key={idx} style={{
-                //     display: 'flex', 
-                //     flexDirection: 'row', 
-                //     height: '2.7em', 
-                //     cursor: 'pointer',
-                //     backgroundColor: currentPage === route.route ? 'white' : 'rgba(0, 0, 0, 0)',
-                //     borderRadius: '5em',
-                //     alignItems: 'center',
-                //     paddingLeft: '0.8em',
-                //     marginBottom: '0.5em',
-                //     transition: 'background-color 1s'}} onClick={() => handleSidebarClick(route.route)}>
-                //     <img src={route.img} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}} alt='' />
-                //     <Typography>{route.name}</Typography>
-                // </div>
             ))
         }
-        {/* <div style={{
-            display: 'flex', 
-            flexDirection: 'row', 
-            height: '2.7em', 
-            cursor: 'pointer',
-            // backgroundColor: 'white',
-            borderRadius: '5em',
-            alignItems: 'center',
-            marginBottom: '0.5em',
-            paddingLeft: '0.8em',}} onClick={() => handleLogout()}>
-            <img src={logOutIcon} style={{width: '1.5em', height: '1.5em', marginRight: '0.5em'}} alt=''/>
-            <Typography>Keluar</Typography>
-        </div> */}
         <ListElement
             img={logOutIcon}
             text='Keluar'

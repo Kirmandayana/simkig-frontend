@@ -127,6 +127,7 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
   const [teacherProfilePic, setTeacherProfilePic] = useState('')
 
   const exportDocumentButtonHandler = () => {
+    //kirim request ke API Endpoint
     fetch(BACKEND_URL + `/api/document/exportDocument`, {
       method: 'POST',
       headers: {
@@ -140,19 +141,24 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
       })
     })
     .then(response => 
-      response.status === 200 ? 
+      //cek status response
+      response.status === 200 ?
+      //jika kode status 200, konversi response menjadi binary/blob agar dapat di download
       response.blob()
       .then(blob => {
-        //set correct filename
+        //nama file dari server ternyata tidak tembus sampai ke client (hasilnya tetap nama random)
+        //jadi kita buat lagi format nama filenya di client sebelum di download
         const filename = `Laporan_Guru_${selectedUser.username}_${monthNumber[selectedMonth]}_${selectedYear}.docx`
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', filename)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
+        const url = URL.createObjectURL(blob) //buat objectURL dari response yang sudah kita rubah menjadi blob
+        //baris code dibawah diambil dari https://stackoverflow.com/a/63965930 (how to download file in react js)
+        const link = document.createElement('a') //buat elemen html a (elemen link)
+        link.href = url //atur agar elemen a tadi merujuk ke url yang merupakan objectURL yang kita buat
+        link.setAttribute('download', filename) //atur attribut download dari elemen tersebut menjadi nama file kita
+        document.body.appendChild(link) //tambahkan elemen a ke dalam dokumen html kita
+        link.click() //simulasikan klik user pada elemen a tersebut
+        document.body.removeChild(link) //hapus elemen a dari dokumen html kita
       }) : 
+      //jika kode status tidak 200, log errornya ke console
       response.json().then(data => console.log(data))
     )
     .catch(err => console.log(err))

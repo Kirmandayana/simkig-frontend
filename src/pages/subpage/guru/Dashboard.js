@@ -22,13 +22,14 @@ function Dashboard() {
   const [showWarning, setShowWarning] = useState(false)
 
   useEffect(() => {
+    //request data dari API Endpoint
     fetch(BACKEND_URL + '/api/document/checkHasUploadedToday', {
       method: 'GET',
       headers: {
         'access-token': localStorage.getItem('accessToken'),
       }
     })
-    .then(resp => {
+    .then(resp => { //response
       if(resp.status === 200) {
         return resp.json()
       } else {
@@ -46,6 +47,7 @@ function Dashboard() {
       console.log(err)
     })
   })
+
   return (
     <div style={{display:'flex', flexDirection: 'row', flexGrow:1}}>
       <div style={{paddingLeft: '9em', marginTop: 'auto', marginBottom: 'auto'}}>

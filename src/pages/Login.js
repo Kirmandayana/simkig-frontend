@@ -18,7 +18,7 @@ function Login() {
     }, [navigate])
 
     const loginButtonHandler = () => {
-        // send post request to login endpoint
+        // kirim request ke API Endpoint
         fetch(BACKEND_URL + "/api/auth/login", {
             method: 'POST',
             headers: {
@@ -31,9 +31,10 @@ function Login() {
         })
         .then(resp => {
             if(resp.status === 200) {
-                // login success
+                // login sukses
                 resp.json().then(data => {
                     console.log(data)
+                    //simpan token JWT
                     localStorage.setItem('accessToken', data.accessToken)
                     setUsername('')
                     setPassword('')
@@ -41,7 +42,7 @@ function Login() {
                     navigate('/home')
                 })
             } else {
-                // login failed
+                // login gagal
                 resp.json().then(data => alert(data.result))
             }
         })
