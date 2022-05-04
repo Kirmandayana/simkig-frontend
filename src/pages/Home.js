@@ -16,6 +16,11 @@ import ManajemenServer from './subpage/operator/ManajemenServer'
 import ProfilGuru from './subpage/guru/Profil';
 import ProfilWakil from './subpage/guru/Profil';
 import background from '../assets/background.jpg';
+import ManajemenJadwal from './subpage/operator/ManajemenJadwal';
+import ManajemenKelas from './subpage/operator/ManajemenKelas';
+import { BACKEND_URL } from '../globals';
+import { responsiveProperty } from '@mui/material/styles/cssUtils';
+import ManajemenRubrikPenilaian from './subpage/operator/ManajemenRubrikPenilaian';
 
 const pageAccessHandler = (role, page, handleClick, handleLogout) => {
     let contentPage = <div>Page not defined</div>
@@ -92,6 +97,15 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                 case 'ManajemenServer':
                     contentPage = <ManajemenServer/>
                     break
+                case 'ManajemenJadwal':
+                    contentPage = <ManajemenJadwal/>
+                    break
+                case 'ManajemenKelas':
+                    contentPage = <ManajemenKelas/>
+                    break
+                case 'ManajemenRubrikPenilaian':
+                    contentPage = <ManajemenRubrikPenilaian/>
+                    break
                 default:
                     break
             }
@@ -113,8 +127,22 @@ function Home() {
         navigate('/')
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         !localStorage.getItem('accessToken') && navigate('/')
+
+        //check if token expired
+        await fetch(BACKEND_URL + '/api/auth/checkToken', {
+            method: 'GET',
+            headers: {
+                'access-token': localStorage.getItem('accessToken'),
+            }
+        }).then(resp => {
+            if(resp.status !== 200) {
+                localStorage.removeItem('accessToken')
+                navigate('/') //redirect to login page
+            }
+        })
+
     }, [])
     
     //redirect to login page if accessToken is not found
@@ -141,7 +169,7 @@ function Home() {
             {/* kontainer yang se pisah antara sidebar sblah kanan, dgn konten sblh kiri */}
             <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
                 {/* sidebar */}
-                <div style={{width: '13em', marginRight: '1em', flexShrink: 0}}>
+                <div style={{width: '14em', marginRight: '1em', flexShrink: 0}}>
                     <Paper elevation={5}>
                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '2.7em'}}>
                             <Typography variant='h6'>Akademis</Typography>
