@@ -80,26 +80,6 @@ function TemplatePanel({
             resp.json().then(err => {console.log(err); alert(err.toString())})
         )
 
-    const deleteTemplateButtonHandler = templateId =>
-        fetch(BACKEND_URL + '/api/evaluation/deleteTemplate', {
-            method: 'POST',
-            headers: {
-                'access-token': localStorage.getItem('accessToken'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                templateId: templateId,
-            })
-        }).then(resp => {
-            if(resp.status !== 200) {
-                resp.json().then(err => {console.log(err); alert(err.toString())})
-                return
-            }
-
-            setSelectedTemplate(null)
-            fetchTemplates()
-        })
-
     useEffect(() => {
         fetchTemplates()
     }, [])

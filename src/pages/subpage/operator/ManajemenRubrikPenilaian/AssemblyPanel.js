@@ -249,7 +249,8 @@ const AddRubricForm = ({
 
 const ChangeNameToolbar = ({
     selectedTemplate,
-    setSelectedTemplate
+    setSelectedTemplate,
+    deleteTemplateButtonHandler,
 }) => {
     const [templateName, setTemplateName] = useState(selectedTemplate?.templateName)
 
@@ -301,6 +302,7 @@ const ChangeNameToolbar = ({
                 variant='contained'
                 style={{
                     flexGrow: 1,
+                    marginRight: '1em',
                 }}
                 onClick={() => {
                     if(templateName.length < 1)
@@ -309,6 +311,20 @@ const ChangeNameToolbar = ({
                     templateNameChangeHandler(templateName)
                 }}
             >Ganti</Button>
+            <Button
+                variant='contained'
+                style={{
+                    flexGrow: 1,
+                    backgroundColor: 'red',
+                }}
+                onClick={() => {
+                    if(!window.confirm("Yakin ingin menghapus template ini?"))
+                        return
+                    
+                    deleteTemplateButtonHandler(selectedTemplate.id)
+                    setSelectedTemplate(null)
+                }}
+            >Hapus</Button>
         </div>
     </>
     )
@@ -715,7 +731,8 @@ const RubricEditorPanel = ({
 
 function AssemblyPanel({
     selectedTemplate,
-    setSelectedTemplate
+    setSelectedTemplate,
+    deleteTemplateButtonHandler,
 }) {
     return (
         <div style={{
@@ -732,8 +749,11 @@ function AssemblyPanel({
             >Kembali</Button>
 
             <ChangeNameToolbar
-                selectedTemplate={selectedTemplate}
-                setSelectedTemplate={setSelectedTemplate}
+                {...{
+                    selectedTemplate,
+                    setSelectedTemplate,
+                    deleteTemplateButtonHandler,
+                }}
             />
 
             <RubricEditorPanel
