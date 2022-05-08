@@ -167,7 +167,7 @@ function Home() {
                 <NavBar currentPage={currentPage}/>
             </div>
             {/* kontainer yang se pisah antara sidebar sblah kanan, dgn konten sblh kiri */}
-            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center', minWidth: '75em'}}>
                 {/* sidebar */}
                 <div style={{width: '14em', marginRight: '1em', flexShrink: 0}}>
                     <Paper elevation={5}>
