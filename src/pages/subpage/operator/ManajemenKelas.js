@@ -122,7 +122,7 @@ const SuntingClassroomDialog = ({
                         updateClassroomHandler(selectedClassroom?.id, className, totalStudents)
                         onClose()
                     }}
-                >Sunting User</Button>
+                >Sunting Kelas</Button>
             </div>
         </Dialog>
     )

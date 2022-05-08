@@ -74,8 +74,8 @@ const DocumentRow = ({row, index}) => {
   const [img, setImg] = useState('')
   
   useEffect(() => {
-    if(row.photoFilename)
-      fetch(BACKEND_URL + `/uploads/${row.photoFilename}`, {
+    if(row.document?.photoFilename)
+      fetch(BACKEND_URL + `/uploads/${row.document?.photoFilename}`, {
         headers: {
           'access-token': localStorage.getItem('accessToken')
         }
@@ -88,34 +88,64 @@ const DocumentRow = ({row, index}) => {
   }, [])
 
   let backgroundColor
+  const isLate = dayjs(row.date).diff(dayjs(), 'day') < -2
 
   //zebra coloring on table
-  if(index % 2 === 0)
-    if(!row.photoFilename && !row.reason) backgroundColor = '#ffcccc'
-    else backgroundColor = '#aecbd6'
-  else
-    if(!row.photoFilename && !row.reason) backgroundColor = '#ffb8b8'
-    else backgroundColor = '#bfd4db'
+  // if(index % 2 === 0)
+  //   if(!row.photoFilename && !row.reason) backgroundColor = '#ffcccc'
+  //   else backgroundColor = '#aecbd6'
+  // else
+  //   if(!row.photoFilename && !row.reason) backgroundColor = '#ffb8b8'
+  //   else backgroundColor = '#bfd4db'
+  if(index % 2 === 0) {
+    if(!row.document) {
+      //if it's 3 days late from today
+      if(isLate) {
+        backgroundColor = '#ffcccc'
+      } else {
+        backgroundColor = '#ffe1b3'
+      }
+    } else {
+      backgroundColor = '#aecbd6'
+    }
+  } else {
+    if(!row.document) {
+      //if it's 3 days late from today
+      if(isLate) {
+        backgroundColor = '#ffb8b8'
+      } else {
+        backgroundColor = '#ffd391'
+      }
+    } else {
+      backgroundColor = '#bfd4db'
+    }
+  }
 
   return (
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
-        {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})}
+        {/* {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})} */}
+        <Typography>{dayjs(row.date).format('YYYY-MM-DD')}</Typography>
+        <Typography style={{fontSize: '0.7em', color: 'rgba(0, 0, 0, 0.75)'}}>
+          ({row.dateHour.toString().length < 2 ? '0' + row.dateHour : row.dateHour}.{row.dateMinute.toString().length < 2 ? '0' + row.dateMinute : row.dateMinute} -
+          {row.dateEndHour.toString().length < 2 ? '0' + row.dateEndHour : row.dateEndHour}.{row.dateEndMinute.toString().length < 2 ? '0' + row.dateEndMinute : row.dateEndMinute})
+        </Typography>
       </TableCell>
       {
-        row.photoFilename ?
+        row.document ?
         <>
-          <TableCell align="left">{row.className}</TableCell>
-          <TableCell align="left">{row.mataPelajaran}</TableCell>
-          <TableCell align="center">{row.jumlahSiswaAktif}</TableCell>
+          <TableCell align="left">{row.document.className}</TableCell>
+          <TableCell align="left">{row.document.mataPelajaran}</TableCell>
+          <TableCell align="center">{row.document.jumlahSiswaAktif}</TableCell>
           <TableCell align="center">
             <img src={img} style={{height: '4em'}} />
           </TableCell>
-          <TableCell align="left">{row.keluhan}</TableCell>
+          <TableCell align="left">{row.document.keluhan}</TableCell>
         </>
         :
         <>
-          <TableCell align="center" colSpan={5}>Belum diisi</TableCell>
+          {/* <TableCell align="center" colSpan={5}>Belum diisi</TableCell> */}
+          <TableCell align="center" colSpan={6}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
         </>
       }
     </TableRow>
@@ -180,7 +210,11 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
     })
     .then(res => {
       if(res.status === 200)
-        return res.json().then(res => setData(res))
+        return res.json().then(res => {
+          res.sort((a, b) => dayjs(a.date).isBefore(dayjs(b.date)) ? -1 : 1)
+
+          setData(res)
+        })
       else
         return res.json().then(msg => console.log(msg))
     })

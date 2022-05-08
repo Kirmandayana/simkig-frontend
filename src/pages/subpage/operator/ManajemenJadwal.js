@@ -443,7 +443,7 @@ function ManajemenJadwal() {
             resp.json().then(data => getSchedules()) :
             resp.json().then(err => {
                 console.log(err)
-                alert(err.toString())
+                alert(err.result.toString())
             })
         )   
     }

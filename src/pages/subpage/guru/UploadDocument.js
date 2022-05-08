@@ -1,25 +1,67 @@
-import { Typography, TextField, Button, Tabs, Tab, Dialog } from '@mui/material';
-import React, { createRef } from 'react';
+import { Typography, TextField, Button, Tabs, Tab, Dialog, Paper, List, ListItemButton, ListItemText, ListItemIcon } from '@mui/material';
+import React, { createRef, useEffect } from 'react';
 import { useState } from 'react';
 import DateAdapter from '@mui/lab/AdapterDayjs';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import Collapse from '@mui/material/Collapse';
 import { DatePicker, DateTimePicker } from '@mui/lab';
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
 
-const getIdentifier = () => {
-   const accessToken = localStorage.getItem('accessToken')
-   
-   if(accessToken) {
-      const identifierData = accessToken.split('.')[0]
-      const identifierJSON = JSON.parse(atob(identifierData))
+const ScheduleExpandableRow = ({rowData, keyData, setSelectedSchedule, selectedSchedule}) => {
+   const [collapsibleState, setCollapsibleState] = useState(false)
 
-      return identifierJSON.identifier
-   } else {
-      throw new Error("No access token found")
-   }
+   return (
+      <>
+         <ListItemButton onClick={() => {
+            setCollapsibleState(!collapsibleState)
+         }} style={{padding: '0em 0.5em 0em 0.5em', boxSizing: 'border-box'}}>
+            <div style={{backgroundColor: 'rgba(0, 127, 255, 0.1)', display: 'flex', alignItems: 'center', flexGrow: 1, borderRadius: '0.5em', padding: '0em 1em 0em 1em', margin: '0.5em 0em 0.5em 0em'}}>
+               <ListItemIcon>
+                  <CalendarMonthOutlinedIcon/>
+               </ListItemIcon>
+               <ListItemText
+                  primary={dayjs(keyData).format('dddd')}
+                  secondary={dayjs(keyData).format('DD MMMM YYYY')}
+               />
+               {collapsibleState ? <ExpandLess/> : <ExpandMore/>}
+            </div>
+         </ListItemButton>
+
+         <Collapse in={collapsibleState} unmountOnExit>
+            <List component="div" disablePadding>
+               {
+                  rowData && rowData.map((data, idx) =>
+                     <ListItemButton 
+                        disabled={data.completed}
+                        key={idx} 
+                        sx={{pl: 8}} 
+                        onClick={() => selectedSchedule?.id !== data.id ? setSelectedSchedule(data) : setSelectedSchedule(null)}
+                        selected={selectedSchedule && selectedSchedule.id === data.id}
+                     >
+                        <ListItemIcon>
+                           <AssignmentOutlinedIcon/>
+                        </ListItemIcon>
+                        <ListItemText 
+                           primary={data.classroom.className + (data.completed ? ' (Selesai)' : '')}
+                           secondary={`
+                              ${data.mataPelajaran}
+                              (${data.dateHour}.${data.dateMinute.toString().length < 2 ? '0' + data.dateMinute : data.dateMinute} - ${data.dateEndHour}.${data.dateEndMinute.toString().length < 2 ? '0' + data.dateEndMinute : data.dateEndMinute})
+                           `}
+                        />
+                     </ListItemButton>
+                  )
+               }
+            </List>
+         </Collapse>
+      </>
+   )
 }
 
 const UnggahDokumenTab = () => {
@@ -27,9 +69,39 @@ const UnggahDokumenTab = () => {
    const [namaKelasVal, setNamaKelasVal] = useState('')
    const [mapelVal, setMapelVal] = useState('')
    const [jumlahSiswaVal, setJumlahSiswaVal] = useState('')
+   const [totalSiswaVal, setTotalSiswaVal] = useState('')
+   const [jumlahSiswaSakitVal, setJumlahSiswaSakitVal] = useState('')
+   const [jumlahSiswaIzinVal, setJumlahSiswaIzinVal] = useState('')
    const [fileGambarVal, setFileGambarVal] = useState('')
    const [keluhanVal, setKeluhanVal] = useState('')
+   const [schedules, setSchedules] = useState([])
+   const [selectedSchedule, setSelectedSchedule] = useState(null)
    let fileGambarRef = createRef()
+
+   const getSchedules = () => {
+      fetch(BACKEND_URL + '/api/scheduler/teacherGetSchedule', {
+         method: 'GET',
+         headers: {
+            'access-token': localStorage.getItem('accessToken'),
+         },
+      }).then(resp => 
+         resp.status === 200 ?
+         resp.json().then(data => {
+            const restructuredData = data.value.reduce((accumulator, currentValue) => {
+                  accumulator[dayjs(currentValue.date).format('YYYY-MM-DD')] =
+                     accumulator[dayjs(currentValue.date).format('YYYY-MM-DD')] || // if the date is already in the accumulator, then just add the current value to the existing array
+                     [] // if the date is not in the accumulator, then create a new array for the date
+                  
+                  accumulator[dayjs(currentValue.date).format('YYYY-MM-DD')].push(currentValue) // add the current value to the array for the date
+                  return accumulator
+               }, {} // initial value for the accumulator
+            )
+            console.log(restructuredData)
+            setSchedules(restructuredData)
+         }) :
+         resp.json().then(err => {console.log(err); alert(err.toString())})
+      )
+   }
 
    const uploadDataButtonHandler = () => {
       let data = new FormData()
@@ -40,7 +112,10 @@ const UnggahDokumenTab = () => {
          namaKelasVal === '' || 
          mapelVal === '' || 
          jumlahSiswaVal === '' || 
-         fileGambarVal === ''
+         // fileGambarVal === '' ||
+         totalSiswaVal === '' ||
+         jumlahSiswaSakitVal === '' ||
+         jumlahSiswaIzinVal === ''
       ) {
          alert('Semua data harus diisi')
          return
@@ -66,7 +141,10 @@ const UnggahDokumenTab = () => {
       data.append('dateMinute', date.get('m'))
       data.append('className', namaKelasVal)
       data.append('mataPelajaran', mapelVal)
+      data.append('jumlahSiswaKelas', totalSiswaVal)
       data.append('jumlahSiswaAktif', jumlahSiswaVal)
+      data.append('jumlahSiswaSakit', jumlahSiswaSakitVal)
+      data.append('jumlahSiswaIzin', jumlahSiswaIzinVal)
       data.append('photo', fileGambarVal)
       data.append('keluhan', keluhanVal)
 
@@ -89,11 +167,45 @@ const UnggahDokumenTab = () => {
             setJumlahSiswaVal('')
             setFileGambarVal('')
             setKeluhanVal('')
+            setTotalSiswaVal('')
+            setJumlahSiswaSakitVal('')
+            setJumlahSiswaIzinVal('')
+
+            setSelectedSchedule(null)
+            getSchedules()
          } else {
             resp.json().then(res => alert(res.result))
          }
       })
    }
+
+   useEffect(() => {
+      getSchedules()
+   }, [])
+
+   //only triggers when selectedSchedule is changed
+   useEffect(() => {
+      if(!selectedSchedule) {
+         setDateVal(null)
+         setNamaKelasVal('')
+         setMapelVal('')
+         setJumlahSiswaVal('')
+         setFileGambarVal('')
+         setKeluhanVal('')
+         setTotalSiswaVal('')
+         setJumlahSiswaSakitVal('')
+         setJumlahSiswaIzinVal('')
+         
+         return
+      }
+
+      const scheduleDate = dayjs(selectedSchedule.date).set('hour', selectedSchedule.dateHour).set('minute', selectedSchedule.dateMinute)
+
+      setDateVal(scheduleDate.toDate())
+      setNamaKelasVal(selectedSchedule.classroom.className)
+      setMapelVal(selectedSchedule.mataPelajaran)
+      setTotalSiswaVal(selectedSchedule.classroom.totalStudents)
+   }, [selectedSchedule])
 
    return (
       <>
@@ -102,10 +214,21 @@ const UnggahDokumenTab = () => {
          </div>
 
          <div style={{display: 'flex', flexDirection:'column', width: '50em'}}>
+            <Paper>
+               <List>
+                  {
+                     Object.keys(schedules).map((key, index) =>
+                        <ScheduleExpandableRow key={index} rowData={schedules[key]} keyData={key} {...{setSelectedSchedule, selectedSchedule}}/>
+                     )
+                  }
+               </List>
+            </Paper>
+
             <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography  style={{flexGrow: 1}}>Tanggal</Typography>
+               <Typography  style={{flexGrow: 1}}>Tanggal <span style={{color: 'red'}}>*</span></Typography>
                <LocalizationProvider dateAdapter={DateAdapter}>
-                  <DateTimePicker 
+                  <DateTimePicker
+                     disabled
                      value={dateVal}
                      onChange={(newValue) => {
                         setDateVal(newValue);
@@ -114,8 +237,9 @@ const UnggahDokumenTab = () => {
             </div>
 
             <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Nama Kelas</Typography>
-               <TextField 
+               <Typography style={{flexGrow: 1}}>Nama Kelas <span style={{color: 'red'}}>*</span></Typography>
+               <TextField
+                  disabled
                   id='outline-basic' 
                   style={{width: '40em'}}
                   value={namaKelasVal}
@@ -124,8 +248,9 @@ const UnggahDokumenTab = () => {
             </div>
 
             <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Mata Pelajaran</Typography> 
+               <Typography style={{flexGrow: 1}}>Mata Pelajaran <span style={{color: 'red'}}>*</span></Typography> 
                <TextField 
+                  disabled
                   id='outline-basic' 
                   style={{width: '40em'}}
                   value={mapelVal}
@@ -134,7 +259,19 @@ const UnggahDokumenTab = () => {
             </div>
 
             <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Jumlah Siswa</Typography>
+               <Typography style={{flexGrow: 1}}>Jumlah Siswa Kelas <span style={{color: 'red'}}>*</span></Typography>
+               <TextField 
+                  disabled
+                  type='number' 
+                  InputLabelProps={{ shrink: true, }} 
+                  style={{width: '40em'}}
+                  value={totalSiswaVal}
+                  onChange={e => setTotalSiswaVal(e.target.value)}
+               />
+            </div>
+
+            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+               <Typography style={{flexGrow: 1}}>Jumlah Siswa Hadir <span style={{color: 'red'}}>*</span></Typography>
                <TextField 
                   type='number' 
                   InputLabelProps={{ shrink: true, }} 
@@ -145,7 +282,29 @@ const UnggahDokumenTab = () => {
             </div>
 
             <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Bukti KBM</Typography>
+               <Typography style={{flexGrow: 1}}>Jumlah Siswa Sakit <span style={{color: 'red'}}>*</span></Typography>
+               <TextField 
+                  type='number' 
+                  InputLabelProps={{ shrink: true, }} 
+                  style={{width: '40em'}}
+                  value={jumlahSiswaSakitVal}
+                  onChange={e => setJumlahSiswaSakitVal(e.target.value)}
+               />
+            </div>
+
+            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+               <Typography style={{flexGrow: 1}}>Jumlah Siswa Izin <span style={{color: 'red'}}>*</span></Typography>
+               <TextField 
+                  type='number' 
+                  InputLabelProps={{ shrink: true, }} 
+                  style={{width: '40em'}}
+                  value={jumlahSiswaIzinVal}
+                  onChange={e => setJumlahSiswaIzinVal(e.target.value)}
+               />
+            </div>
+
+            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+               <Typography style={{flexGrow: 1}} >Bukti KBM <span style={{color: 'red'}}>*</span></Typography>
                <div style={{width: '40em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                   <input 
                      type='file' 
