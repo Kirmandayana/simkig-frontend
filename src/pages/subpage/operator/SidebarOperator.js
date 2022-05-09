@@ -3,6 +3,9 @@ import homeIcon from '../../../assets/homeIcon.png'
 import userIcon from '../../../assets/userIcon.png'
 import Sidebar from '../../../components/Sidebar'
 import serverIcon from '../../../assets/serverIcon.png'
+import scheduleIcon from '../../../assets/scheduleIcon.png'
+import clipboardIcon from '../../../assets/clipboardIcon.png'
+import classIcon from '../../../assets/classIcon.png'
 
 function SidebarOperator({handleSidebarClick, currentPage, handleLogout}) {
     const routes = [
@@ -23,17 +26,17 @@ function SidebarOperator({handleSidebarClick, currentPage, handleLogout}) {
         // },
         {
             name: 'Manajemen Jadwal',
-            img: serverIcon,
+            img: scheduleIcon,
             route: 'ManajemenJadwal'
         },
         {
             name: 'Manajemen Kelas',
-            img: serverIcon,
+            img: classIcon,
             route: 'ManajemenKelas'
         },
         {
             name: 'Manajemen Rubrik Penilaian',
-            img: serverIcon,
+            img: clipboardIcon,
             route: 'ManajemenRubrikPenilaian'
         }
     ]

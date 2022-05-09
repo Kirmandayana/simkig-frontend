@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { BACKEND_URL } from '../../../globals'
 import AssemblyPanel from './ManajemenRubrikPenilaian/AssemblyPanel'
 import TemplatePanel from './ManajemenRubrikPenilaian/TemplatePanel'
+import EvaluationPeriodPanel from './ManajemenRubrikPenilaian/EvaluationPeriodPanel'
+import { Typography, Paper } from '@mui/material'
 
 function ManajemenRubrikPenilaian() {
     const [selectedTemplate, setSelectedTemplate] = useState(null)
@@ -27,13 +29,22 @@ function ManajemenRubrikPenilaian() {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
+        minWidth: '60em'
     }}>
-        {
-            selectedTemplate ?
-            // <AssemblyPanel selectedTemplate={selectedTemplate} setSelectedTemplate={setSelectedTemplate} deleteTemplateButtonHandler/> :
-            <AssemblyPanel {...{selectedTemplate, setSelectedTemplate, deleteTemplateButtonHandler}}/> :
-            <TemplatePanel {...{setSelectedTemplate}}/>
-        }
+        <Paper elevation={3} sx={{padding: '0.25em', marginBottom: '1em'}}>
+            <Typography variant='h6'>Kelola Waktu Evaluasi</Typography>
+            <EvaluationPeriodPanel/>
+
+        </Paper>
+        <Paper elevation={3} sx={{padding: '0.25em'}}>
+            <Typography variant='h6'>Kelola Template dan Rubrik Penilaian</Typography>
+            {
+                selectedTemplate ?
+                // <AssemblyPanel selectedTemplate={selectedTemplate} setSelectedTemplate={setSelectedTemplate} deleteTemplateButtonHandler/> :
+                <AssemblyPanel {...{selectedTemplate, setSelectedTemplate, deleteTemplateButtonHandler}}/> :
+                <TemplatePanel {...{setSelectedTemplate}}/>
+            }
+        </Paper>
     </div>
     )
 }
