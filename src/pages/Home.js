@@ -19,8 +19,8 @@ import background from '../assets/background.jpg';
 import ManajemenJadwal from './subpage/operator/ManajemenJadwal';
 import ManajemenKelas from './subpage/operator/ManajemenKelas';
 import { BACKEND_URL } from '../globals';
-import { responsiveProperty } from '@mui/material/styles/cssUtils';
 import ManajemenRubrikPenilaian from './subpage/operator/ManajemenRubrikPenilaian';
+import EvalausiKinerjaGuru from './subpage/wakilKepsek/EvaluasiKinerjaGuru';
 
 const pageAccessHandler = (role, page, handleClick, handleLogout) => {
     let contentPage = <div>Page not defined</div>
@@ -57,6 +57,9 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                     break
                 case 'LihatLaporan':
                     contentPage = <TabelLaporanGuruContainer/>
+                    break
+                case 'EvaluasiKinerjaGuru':
+                    contentPage = <EvalausiKinerjaGuru/>
                     break
                 case 'Profil':
                     contentPage = <ProfilWakil/>
@@ -167,7 +170,7 @@ function Home() {
                 <NavBar currentPage={currentPage}/>
             </div>
             {/* kontainer yang se pisah antara sidebar sblah kanan, dgn konten sblh kiri */}
-            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center', minWidth: '75em'}}>
+            <div style={{padding: '1em 2em 0em 2em', display: 'flex', flexDirection: 'row', justifyContent: 'center', minWidth: '75em', boxSizing: 'border-box'}}>
                 {/* sidebar */}
                 <div style={{width: '14em', marginRight: '1em', flexShrink: 0}}>
                     <Paper elevation={5}>
@@ -181,7 +184,7 @@ function Home() {
                 </div>
 
                 {/* konten */}
-                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex', maxWidth: '85em', marginBottom: '2em'}}>
+                <div style={{flexGrow: 1, minHeight: '32em', display: 'flex', marginBottom: '2em'}}>
                     <Paper elevation={10} style={{flexGrow: 1, padding: '1em', display: 'flex', overflow: 'hidden'}}>
                         {contentPage}
                     </Paper>

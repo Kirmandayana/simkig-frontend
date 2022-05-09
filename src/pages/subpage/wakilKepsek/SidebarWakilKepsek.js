@@ -3,6 +3,7 @@ import documentIcon from '../../../assets/documentIcon.png'
 import dashboardIcon from '../../../assets/dashboardIcon.png'
 import Sidebar from '../../../components/Sidebar'
 import userIcon from '../../../assets/userIcon.png'
+import clipboardIcon from '../../../assets/clipboardIcon.png'
 
 const SidebarWakilKepsek = ({handleSidebarClick, currentPage, handleLogout}) => {
   const routes = [
@@ -15,6 +16,11 @@ const SidebarWakilKepsek = ({handleSidebarClick, currentPage, handleLogout}) => 
       name: 'Lihat Laporan',
       img: documentIcon,
       route: 'LihatLaporan'
+    },
+    {
+      name: 'Evaluasi Kinerja Guru',
+      img: clipboardIcon,
+      route: 'EvaluasiKinerjaGuru'
     },
     {
       name: 'Profil',
