@@ -14,6 +14,19 @@ const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
 
+const TabPanel = ({children, value, index, ...other}) => {
+   return (
+      <>
+         {value !== index ? 
+            <></> :
+            <>
+               {children}
+            </>
+         }
+      </>
+   )
+}
+
 const ScheduleExpandableRow = ({rowData, keyData, setSelectedSchedule, selectedSchedule}) => {
    const [collapsibleState, setCollapsibleState] = useState(false)
 
@@ -39,7 +52,7 @@ const ScheduleExpandableRow = ({rowData, keyData, setSelectedSchedule, selectedS
                {
                   rowData && rowData.map((data, idx) =>
                      <ListItemButton 
-                        disabled={data.completed}
+                        disabled={data.completed || data.absent}
                         key={idx} 
                         sx={{pl: 8}} 
                         onClick={() => selectedSchedule?.id !== data.id ? setSelectedSchedule(data) : setSelectedSchedule(null)}
@@ -49,7 +62,7 @@ const ScheduleExpandableRow = ({rowData, keyData, setSelectedSchedule, selectedS
                            <AssignmentOutlinedIcon/>
                         </ListItemIcon>
                         <ListItemText 
-                           primary={data.classroom.className + (data.completed ? ' (Selesai)' : '')}
+                           primary={data.classroom.className + (data.completed ? ' (Selesai)' : data.absent ? ' (Izin)' : '')}
                            secondary={`
                               ${data.mataPelajaran}
                               (${data.dateHour}.${data.dateMinute.toString().length < 2 ? '0' + data.dateMinute : data.dateMinute} - ${data.dateEndHour}.${data.dateEndMinute.toString().length < 2 ? '0' + data.dateEndMinute : data.dateEndMinute})
@@ -68,6 +81,7 @@ const UnggahDokumenTab = () => {
    const [dateVal, setDateVal] = useState(null)
    const [namaKelasVal, setNamaKelasVal] = useState('')
    const [mapelVal, setMapelVal] = useState('')
+   const [topikVal, setTopikVal] = useState('')
    const [jumlahSiswaVal, setJumlahSiswaVal] = useState('')
    const [totalSiswaVal, setTotalSiswaVal] = useState('')
    const [jumlahSiswaSakitVal, setJumlahSiswaSakitVal] = useState('')
@@ -76,6 +90,7 @@ const UnggahDokumenTab = () => {
    const [keluhanVal, setKeluhanVal] = useState('')
    const [schedules, setSchedules] = useState([])
    const [selectedSchedule, setSelectedSchedule] = useState(null)
+   const [currentTab, setCurrentTab] = useState(0)
    let fileGambarRef = createRef()
 
    const getSchedules = () => {
@@ -96,6 +111,7 @@ const UnggahDokumenTab = () => {
                   return accumulator
                }, {} // initial value for the accumulator
             )
+            
             console.log(restructuredData)
             setSchedules(restructuredData)
          }) :
@@ -111,6 +127,7 @@ const UnggahDokumenTab = () => {
          dateVal === null || 
          namaKelasVal === '' || 
          mapelVal === '' || 
+         topikVal === '' ||
          jumlahSiswaVal === '' || 
          // fileGambarVal === '' ||
          totalSiswaVal === '' ||
@@ -141,6 +158,7 @@ const UnggahDokumenTab = () => {
       data.append('dateMinute', date.get('m'))
       data.append('className', namaKelasVal)
       data.append('mataPelajaran', mapelVal)
+      data.append('topik', topikVal)
       data.append('jumlahSiswaKelas', totalSiswaVal)
       data.append('jumlahSiswaAktif', jumlahSiswaVal)
       data.append('jumlahSiswaSakit', jumlahSiswaSakitVal)
@@ -164,6 +182,7 @@ const UnggahDokumenTab = () => {
             setDateVal(null)
             setNamaKelasVal('')
             setMapelVal('')
+            setTopikVal('')
             setJumlahSiswaVal('')
             setFileGambarVal('')
             setKeluhanVal('')
@@ -179,6 +198,45 @@ const UnggahDokumenTab = () => {
       })
    }
 
+   const uploadAbsentButtonHandler = () => {
+      //checkings
+      if(!selectedSchedule)
+         return alert("Pilih jadwal terlebih dahulu")
+
+      if(keluhanVal === '')
+         return alert("Alasan harus diisi")
+
+      const data = {
+         date: selectedSchedule.date,
+         dateHour: selectedSchedule.dateHour,
+         dateMinute: selectedSchedule.dateMinute,
+         dateEndHour: selectedSchedule.dateEndHour,
+         dateEndMinute: selectedSchedule.dateEndMinute,
+         ClassScheduleId: selectedSchedule.id,
+         reason: keluhanVal,
+      }
+
+      fetch(BACKEND_URL + '/api/absence/addAbsence', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json',
+            'access-token': localStorage.getItem('accessToken')
+         },
+         body: JSON.stringify(data),
+      })
+      .then(resp =>
+         resp.status === 200 ?
+         (() => {
+            alert('Izin berhasil ditambahkan!')
+
+            setSelectedSchedule(null)
+            setKeluhanVal('')
+            getSchedules()
+         })() :
+         resp.json().then(err => {console.log(err); alert(err)})
+      )
+   }
+
    useEffect(() => {
       getSchedules()
    }, [])
@@ -189,6 +247,7 @@ const UnggahDokumenTab = () => {
          setDateVal(null)
          setNamaKelasVal('')
          setMapelVal('')
+         setTopikVal('')
          setJumlahSiswaVal('')
          setFileGambarVal('')
          setKeluhanVal('')
@@ -213,8 +272,8 @@ const UnggahDokumenTab = () => {
             <Typography variant='h6'>Unggah Dokumentasi Hasil Kegiatan Belajar Mengajar</Typography>
          </div>
 
-         <div style={{display: 'flex', flexDirection:'column', width: '50em'}}>
-            <Paper>
+         <div style={{display: 'flex', flexDirection:'column', width: '55em'}}>
+            <Paper style={{margin:'0em 5em 0em 5em'}}>
                <List>
                   {
                      Object.keys(schedules).map((key, index) =>
@@ -224,7 +283,7 @@ const UnggahDokumenTab = () => {
                </List>
             </Paper>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+            <div style={{display: 'flex', alignItems: 'center', margin: '1em 3em 0em 3em', flexDirection: 'row', flexGrow: 1}}>
                <Typography  style={{flexGrow: 1}}>Tanggal <span style={{color: 'red'}}>*</span></Typography>
                <LocalizationProvider dateAdapter={DateAdapter}>
                   <DateTimePicker
@@ -236,7 +295,7 @@ const UnggahDokumenTab = () => {
                </LocalizationProvider>
             </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+            <div style={{display: 'flex', alignItems: 'center', margin: '1em 3em 0em 3em', flexDirection: 'row', flexGrow: 1}}>
                <Typography style={{flexGrow: 1}}>Nama Kelas <span style={{color: 'red'}}>*</span></Typography>
                <TextField
                   disabled
@@ -247,98 +306,137 @@ const UnggahDokumenTab = () => {
                />
             </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Mata Pelajaran <span style={{color: 'red'}}>*</span></Typography> 
-               <TextField 
-                  disabled
-                  id='outline-basic' 
-                  style={{width: '40em'}}
-                  value={mapelVal}
-                  onChange={e => setMapelVal(e.target.value)}
-               />
-            </div>
+            <Paper elevation={8} style={{padding: '0em 3em 2em 3em', marginTop: '1em'}}>
+               <Tabs value={currentTab} onChange={(e, newVal) => setCurrentTab(newVal)}>
+                  <Tab label="Hadir"/>
+                  <Tab label="Izin"/>
+               </Tabs>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Jumlah Siswa Kelas <span style={{color: 'red'}}>*</span></Typography>
-               <TextField 
-                  disabled
-                  type='number' 
-                  InputLabelProps={{ shrink: true, }} 
-                  style={{width: '40em'}}
-                  value={totalSiswaVal}
-                  onChange={e => setTotalSiswaVal(e.target.value)}
-               />
-            </div>
+               <TabPanel value={currentTab} index={0}>
+                  <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                     <Typography style={{flexGrow: 1}}>Mata Pelajaran <span style={{color: 'red'}}>*</span></Typography> 
+                     <TextField 
+                        disabled
+                        id='outline-basic' 
+                        style={{width: '40em'}}
+                        value={mapelVal}
+                        onChange={e => setMapelVal(e.target.value)}
+                     />
+                  </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Jumlah Siswa Hadir <span style={{color: 'red'}}>*</span></Typography>
-               <TextField 
-                  type='number' 
-                  InputLabelProps={{ shrink: true, }} 
-                  style={{width: '40em'}}
-                  value={jumlahSiswaVal}
-                  onChange={e => setJumlahSiswaVal(e.target.value)}
-               />
-            </div>
+                  <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                     <Typography style={{flexGrow: 1}}>Topik <span style={{color: 'red'}}>*</span></Typography> 
+                     <TextField 
+                        id='outline-basic' 
+                        style={{width: '40em'}}
+                        value={topikVal}
+                        onChange={e => setTopikVal(e.target.value)}
+                     />
+                  </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Jumlah Siswa Sakit <span style={{color: 'red'}}>*</span></Typography>
-               <TextField 
-                  type='number' 
-                  InputLabelProps={{ shrink: true, }} 
-                  style={{width: '40em'}}
-                  value={jumlahSiswaSakitVal}
-                  onChange={e => setJumlahSiswaSakitVal(e.target.value)}
-               />
-            </div>
+                  <div style={{
+                     display: 'flex',
+                     flexGrow: 1,
+                  }}>
+                     <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1, marginRight: '1em'}}>
+                        <Typography style={{flexGrow: 1}}>Jumlah Siswa Kelas <span style={{color: 'red'}}>*</span></Typography>
+                        <TextField 
+                           disabled
+                           type='number' 
+                           InputLabelProps={{ shrink: true, }} 
+                           style={{width: '8em'}}
+                           value={totalSiswaVal}
+                           onChange={e => setTotalSiswaVal(e.target.value)}
+                        />
+                     </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Jumlah Siswa Izin <span style={{color: 'red'}}>*</span></Typography>
-               <TextField 
-                  type='number' 
-                  InputLabelProps={{ shrink: true, }} 
-                  style={{width: '40em'}}
-                  value={jumlahSiswaIzinVal}
-                  onChange={e => setJumlahSiswaIzinVal(e.target.value)}
-               />
-            </div>
+                     <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1, marginRight: '1em'}}>
+                        <Typography style={{flexGrow: 1}}>Hadir <span style={{color: 'red'}}>*</span></Typography>
+                        <TextField 
+                           type='number' 
+                           InputLabelProps={{ shrink: true, }} 
+                           style={{width: '5em'}}
+                           value={jumlahSiswaVal}
+                           onChange={e => setJumlahSiswaVal(e.target.value)}
+                        />
+                     </div>
 
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}} >Bukti KBM <span style={{color: 'red'}}>*</span></Typography>
-               <div style={{width: '40em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                  <input 
-                     type='file' 
-                     ref={fileGambarRef}
-                     style={{display: 'none'}}
-                     onChange={event => {
-                        console.log("fileGambar onchange")
-                        setFileGambarVal(event.target.files[0])
-                        event.target.value = null
-                     }}
-                  />
-                  <Button 
-                     variant='contained' 
-                     color='primary' 
-                     style={{height: '3em', marginRight: '1em'}}
-                     onClick={() => {
-                        fileGambarRef.current.click()
-                     }}
-                  >Unggah Foto Bukti KBM</Button>
-                  <Typography>{fileGambarVal.name}</Typography>
-               </div>
-            </div>
-            
-            <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-               <Typography style={{flexGrow: 1}}>Keluhan</Typography>
-               <TextField 
-                  id='outlined-multiline-static' 
-                  multiline 
-                  rows={5} 
-                  style={{width: '40em'}}
-                  value={keluhanVal}
-                  onChange={e => setKeluhanVal(e.target.value)}
-               />
-            </div> 
+                     <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1, marginRight: '1em'}}>
+                        <Typography style={{flexGrow: 1, }}>Sakit <span style={{color: 'red'}}>*</span></Typography>
+                        <TextField 
+                           type='number' 
+                           InputLabelProps={{ shrink: true, }} 
+                           style={{width: '5em'}}
+                           value={jumlahSiswaSakitVal}
+                           onChange={e => setJumlahSiswaSakitVal(e.target.value)}
+                        />
+                     </div>
+
+                     <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                        <Typography style={{flexGrow: 1}}>Izin <span style={{color: 'red'}}>*</span></Typography>
+                        <TextField 
+                           type='number' 
+                           InputLabelProps={{ shrink: true, }} 
+                           style={{width: '5em'}}
+                           value={jumlahSiswaIzinVal}
+                           onChange={e => setJumlahSiswaIzinVal(e.target.value)}
+                        />
+                     </div>
+                  </div>
+
+
+                  <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                     <Typography style={{flexGrow: 1}} >Bukti KBM <span style={{color: 'red'}}>*</span></Typography>
+                     <div style={{width: '40em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                        <input 
+                           type='file' 
+                           ref={fileGambarRef}
+                           style={{display: 'none'}}
+                           onChange={event => {
+                              console.log("fileGambar onchange")
+                              setFileGambarVal(event.target.files[0])
+                              event.target.value = null
+                           }}
+                        />
+                        <Button 
+                           variant='contained' 
+                           color='primary' 
+                           style={{height: '3em', marginRight: '1em'}}
+                           onClick={() => {
+                              fileGambarRef.current.click()
+                           }}
+                        >Unggah Foto Bukti KBM</Button>
+                        <Typography>{fileGambarVal.name}</Typography>
+                     </div>
+                  </div>
+                  
+                  <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                     <Typography style={{flexGrow: 1}}>Keluhan</Typography>
+                     <TextField 
+                        id='outlined-multiline-static' 
+                        multiline 
+                        rows={5} 
+                        style={{width: '40em'}}
+                        value={keluhanVal}
+                        onChange={e => setKeluhanVal(e.target.value)}
+                     />
+                  </div> 
+               </TabPanel>
+
+               <TabPanel value={currentTab} index={1}>
+                  <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
+                     <Typography style={{flexGrow: 1}}>Alasan Izin <span style={{color: 'red'}}>*</span></Typography>
+                     <TextField 
+                        id='outlined-multiline-static' 
+                        multiline 
+                        rows={5} 
+                        style={{width: '40em'}}
+                        value={keluhanVal}
+                        onChange={e => setKeluhanVal(e.target.value)}
+                     />
+                  </div> 
+               </TabPanel>
+            </Paper>
 
             <Button 
                variant='contained' 
@@ -349,7 +447,7 @@ const UnggahDokumenTab = () => {
                   marginTop: '1em', 
                   alignSelf: 'end'
                }}
-               onClick={uploadDataButtonHandler}
+               onClick={currentTab === 0 ? uploadDataButtonHandler : uploadAbsentButtonHandler}
             >Kirim</Button>
          </div>
       </>

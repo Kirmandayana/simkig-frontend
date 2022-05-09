@@ -108,6 +108,10 @@ const DocumentRow = ({row, index}) => {
     } else {
       backgroundColor = '#aecbd6'
     }
+    
+    if(row.absent) {
+      backgroundColor = '#ffe1b3'
+    }
   } else {
     if(!row.document) {
       //if it's 3 days late from today
@@ -118,6 +122,10 @@ const DocumentRow = ({row, index}) => {
       }
     } else {
       backgroundColor = '#bfd4db'
+    }
+
+    if(row.absent) {
+      backgroundColor = '#ffd391'
     }
   }
 
@@ -136,16 +144,24 @@ const DocumentRow = ({row, index}) => {
         <>
           <TableCell align="left">{row.document.className}</TableCell>
           <TableCell align="left">{row.document.mataPelajaran}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaAktif}</TableCell>
+          <TableCell align="left">{row.document.topik}</TableCell>
+          <TableCell align="center">{row.document.jumlahSiswaKelas}</TableCell>
+          <TableCell align="center">{row.document.jumlahSiswaAktif} / {row.document.jumlahSiswaSakit} / {row.document.jumlahSiswaIzin}</TableCell>
           <TableCell align="center">
             <img src={img} style={{height: '4em'}} />
           </TableCell>
           <TableCell align="left">{row.document.keluhan}</TableCell>
         </>
         :
+        row.absent ?
+        <>
+          <TableCell align="center" colSpan={7}>
+            Izin - ({row.absent.reason})
+          </TableCell>
+        </> :
         <>
           {/* <TableCell align="center" colSpan={5}>Belum diisi</TableCell> */}
-          <TableCell align="center" colSpan={6}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
+          <TableCell align="center" colSpan={7}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
         </>
       }
     </TableRow>
@@ -332,7 +348,9 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
                   <TableCell align="center">Tanggal</TableCell>
                   <TableCell align="center">Nama Kelas</TableCell>
                   <TableCell align="center">Mata Pelajaran</TableCell>
+                  <TableCell align="center">Materi / Topik</TableCell>
                   <TableCell align="center">Jumlah Siswa</TableCell>
+                  <TableCell align="center">Hadir / Sakit / Izin</TableCell>
                   <TableCell align="center">Bukti KBM</TableCell>
                   <TableCell align="center">Keluhan</TableCell>
                 </TableRow>

@@ -115,7 +115,7 @@ const FilterBar = ({setData, month, setMonth, year, setYear}) => {
   )
 }
 
-const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
+const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsentButtonHandler}) => {
   const [img, setImg] = useState('')
   
   useEffect(() => {
@@ -147,6 +147,10 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
     } else {
       backgroundColor = '#aecbd6'
     }
+
+    if(row.absent) {
+      backgroundColor = '#ffe1b3'
+    }
   } else {
     if(!row.document) {
       //if it's 3 days late from today
@@ -157,6 +161,10 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
       }
     } else {
       backgroundColor = '#bfd4db'
+    }
+
+    if(row.absent) {
+      backgroundColor = '#ffd391'
     }
   }
 
@@ -175,7 +183,9 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
         <>
           <TableCell align="left">{row.document.className}</TableCell>
           <TableCell align="left">{row.document.mataPelajaran}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaAktif}</TableCell>
+          <TableCell align="left">{row.document.topik}</TableCell>
+          <TableCell align="center">{row.document.jumlahSiswaKelas}</TableCell>
+          <TableCell align="center">{row.document.jumlahSiswaAktif} / {row.document.jumlahSiswaSakit} / {row.document.jumlahSiswaIzin}</TableCell>
           <TableCell align="center">
             <img src={img} style={{height: '4em'}} />
           </TableCell>
@@ -189,7 +199,19 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler}) => {
           </TableCell>
         </>
         :
-        <TableCell align="center" colSpan={6}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
+        row.absent ?
+        <>
+          <TableCell align="center" colSpan={7}>
+            Izin - ({row.absent.reason})
+          </TableCell>
+          <TableCell>
+            <Button
+              variant='contained'
+              onClick={() => removeAbsentButtonHandler(row)}
+            >Hapus</Button>
+          </TableCell>
+        </> :
+        <TableCell align="center" colSpan={8}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
       }
     </TableRow>
   )
@@ -217,7 +239,30 @@ function HasilDocument() {
       if(res.status === 200) return res.json().then(res => alert(res?.result))
       else return res.json().then(msg => alert(msg?.result))
     })
-    .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => {console.log(res); setData(res)}))
+    .then(() => getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res)))
+  }
+
+  const removeAbsentButtonHandler = row => {
+    if(!window.confirm('Apakah anda yakin ingin menghapus izin ini?'))
+      return
+
+    fetch(BACKEND_URL + '/api/absence/deleteAbsence', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'access-token': localStorage.getItem('accessToken')
+      },
+      body: JSON.stringify({absenceId: row.absent.id})
+    })
+    .then(res =>
+      res.status === 200 ?
+      (() => {
+        alert('Izin berhasil dihapus')
+
+        getDocumentList(getMonthRange(month, year)[0], getMonthRange(month, year)[1]).then(res => setData(res))
+      })() :
+      res.json().then(error => {console.log(error); alert(error.toString())})
+    )
   }
 
   useState(() => {
@@ -240,7 +285,9 @@ function HasilDocument() {
                 <TableCell align="left">Tanggal</TableCell>
                 <TableCell align="left">Nama Kelas</TableCell>
                 <TableCell align="left">Mata Pelajaran</TableCell>
-                <TableCell align="center">Jumlah Siswa</TableCell>
+                <TableCell align="left">Topik / Materi</TableCell>
+                <TableCell align="center" sx={{width: '1em'}}>Jumlah Siswa Kelas</TableCell>
+                <TableCell align="center">Hadir / Sakit / Izin</TableCell>
                 <TableCell align="center">Bukti KBM</TableCell>
                 <TableCell align="left">Keluhan</TableCell>
                 <TableCell align="center">Aksi</TableCell>
@@ -254,7 +301,10 @@ function HasilDocument() {
                   row={row} 
                   key={row.id} 
                   index={index} 
-                  removeDocumentButtonHandler={removeDocumentButtonHandler}
+                  {...{
+                    removeDocumentButtonHandler,
+                    removeAbsentButtonHandler,
+                  }}
                 />
               )}
             </TableBody>
