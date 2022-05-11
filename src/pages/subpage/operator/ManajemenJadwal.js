@@ -495,7 +495,7 @@ function ManajemenJadwal() {
                 }}
                 onClick={() => {
                     setCurrentViewName('Month')
-                    setCurrentViewDate(new Date().toISOString().substring(0, 10))
+                    // setCurrentViewDate(new Date().toISOString().substring(0, 10))
                 }}
             >Kembali ke kalender bulan</Button>
 
