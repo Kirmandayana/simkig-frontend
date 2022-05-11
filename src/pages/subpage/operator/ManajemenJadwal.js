@@ -477,6 +477,8 @@ function ManajemenJadwal() {
         instances: teachersList,
     }]), [teachersList])
 
+    useEffect(() => getSchedules(), [currentViewDate])
+
     const parsedCurrentViewDate = dayjs(currentViewDate)
 
     return (
@@ -536,7 +538,7 @@ function ManajemenJadwal() {
                     grouping={grouping}
                 />
 
-                <EditingState
+                {/* <EditingState
                     onCommitChanges={({added, changed, deleted}) => {
                         if(added) {
                             setExampleSchedules([...exampleSchedules, {
@@ -561,7 +563,7 @@ function ManajemenJadwal() {
                     onAppointmentChangesChange={schedule => setScheduleChanges(schedule)}
                     editingAppointment={editingSchedule}
                     onEditingAppointmentChange={schedule => setEditingSchedule(schedule)}
-                />
+                /> */}
 
                 <MonthView
                     name="Month"
@@ -586,7 +588,7 @@ function ManajemenJadwal() {
                     mainResourceName="guru"
                 />}
                 {currentViewName === 'Month' ? null : <IntegratedGrouping/>}
-                {currentViewName === 'Month' ? null : <IntegratedEditing/>}
+                {/* {currentViewName === 'Month' ? null : <IntegratedEditing/>} */}
                 {currentViewName === 'Month' ? null : <AppointmentTooltip 
                     showCloseButton 
                     visible={scheduleTooltipVisible}
@@ -594,7 +596,7 @@ function ManajemenJadwal() {
                     headerComponent={({...restProp}) => <Header {...{deleteSchedule}} {...restProp}/>} 
                     contentComponent={({...restProp}) => <Content {...restProp}/>}
                 />}
-                {currentViewName === 'Month' ? null : <AppointmentForm/>}
+                {/* {currentViewName === 'Month' ? null : <AppointmentForm/>} */}
                 {currentViewName === 'Month' ? null : <GroupingPanel/>}
             </Scheduler>
         </div>
