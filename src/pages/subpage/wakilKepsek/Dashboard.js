@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {Paper, Typography} from '@mui/material'
+import {Button, Paper, Typography} from '@mui/material'
 import {
   Chart as ChartJS, 
   ArcElement, 
@@ -45,20 +45,23 @@ const StudentAttendanceSumsChart = ({attendances}) => {
 }
 
 const AbsencePieChart = ({absences}) => {
-  absences = absences ? absences : {absentList: [], teachersCount: 0}
-
+  console.log(absences)
   const dataPieChart = {
-    labels: ['Tidak Hadir', 'Hadir'],
+    labels: ['Tidak Hadir', 'Izin', 'Belum memasukkan dokumentasi', 'Hadir'],
     datasets: [
       {
-        data: [absences.absentList.length, absences.teachersCount - absences.absentList.length],
+        data: [absences?.absentSchedule, absences?.ijinSchedule, absences?.notYetSubmitSchedule, absences?.hadirSchedule],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 0, 0, 0.2)',
+          'rgba(255, 183, 0, 0.35)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 114, 255, 0.25)',
         ],
         borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
+          'rgba(255, 0, 0, 0.2)',
+          'rgba(255, 183, 0, 0.35)',
+          'rgba(0, 0, 0, 0.1)',
+          'rgba(0, 114, 255, 0.25)',
         ],
         borderWidth: 1,
       },
@@ -91,42 +94,73 @@ const AbsenceRow = ({row, index}) => {
     backgroundColor = '#bfd4db'
 
   return (
-    <TableRow style={{backgroundColor: backgroundColor}}>
-      <TableCell component="th" scope="row" align="center">
-        <img 
-          src={profilePic}
-          style={{
-            width: '3em',
-            borderRadius: '50%',
-          }}
-          alt=''
-        />
-      </TableCell>
-      <TableCell align="center">
-        {row.NIP}
-      </TableCell>
-      <TableCell align="center">{row.fullName}</TableCell>
-    </TableRow>
+    <>
+      <TableRow style={{backgroundColor, display: row.jadwal ? null : 'none'}}>
+        <TableCell component="th" scope="row" align="center" style={{display: 'flex', alignItems: 'center', justifyContent: 'space-evenly'}}>
+          <Typography>{index + 1}. </Typography>
+          <img 
+            src={profilePic}
+            style={{
+              width: '3em',
+              borderRadius: '50%',
+            }}
+            alt=''
+          />
+        </TableCell>
+        <TableCell align="center">
+          {row.NIP}
+        </TableCell>
+        <TableCell align="center">{row.fullName}</TableCell>
+      </TableRow>
+      <TableRow style={{backgroundColor, padding: 0}}>
+        <TableCell colSpan={3} sx={{padding: 0}}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {
+              row.jadwal && row.jadwal.map((el, idx) => (
+                <Paper elevation={4} sx={{padding: '0.25em 0em 0.25em 1em', display: 'flex', alignItems: 'center', margin: '1em'}}>
+
+                  <div style={{
+                    width: '1em', 
+                    height: '1em', 
+                    backgroundColor: 'rgba(0,0,0,0.25)', 
+                    borderRadius: '0.25em', 
+                    marginRight: '2em'}}></div>
+
+                  <Typography>{dayjs(el.date).set('hour', el.dateHour).set('minute', el.dateMinute).format('DD/MM/YYYY HH:mm')} - {el.classroom.className} - {el.mataPelajaran} <b>(Alasan: {el.reason})</b></Typography> 
+                </Paper>
+              ))
+            }
+          </div>
+        </TableCell>
+      </TableRow>
+    </>
   )
 }
 
 function Dashboard() {
   const [absences, setAbsences] = React.useState(null)
   const [studentAttendance, setStudentAttendance] = React.useState(null)
+  const [currentDate, setCurrentDate] = React.useState(dayjs())
 
   useEffect(() => {
-    fetch(BACKEND_URL + '/api/aggregate/getAbsentTeachers', {
+    fetch(BACKEND_URL + '/api/aggregate/getAbsentTeacher2', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'access-token': localStorage.getItem('accessToken')
       },
       body: JSON.stringify({
-        date: Date.now()
+        date: currentDate.format('YYYY-MM-DD')
       })
     }).then(resp => {
       resp.status === 200 ? 
-      resp.json().then(data => setAbsences(data)) : 
+      resp.json().then(data => {
+        console.log(data)
+        setAbsences(data.result)
+      }) : 
       resp.json().then(data => console.log(data))
     }).catch(err => console.log(err))
 
@@ -137,21 +171,41 @@ function Dashboard() {
         'access-token': localStorage.getItem('accessToken')
       },
       body: JSON.stringify({
-        date: Date.now()
+        date: currentDate.format('YYYY-MM-DD')
       })
     }).then(resp => {
       resp.status === 200 ? 
       resp.json().then(data => setStudentAttendance(data)) : 
       resp.text().then(data => console.log(data))
     }).catch(err => console.log(err))
-  }, [])
+  }, [currentDate])
 
   return (
     <div style={{display: 'flex', flexDirection: 'column', width: '58em', marginLeft: 'auto', marginRight: 'auto'}}>
-    
+      <div style={{display: 'flex', marginBottom: '1em'}}>
+        <Typography variant='h6' style={{fontSize: '1.1em'}}>Dashboard untuk {currentDate.format('dddd, DD/MM/YYYY')}</Typography>
+
+        <div style={{flexGrow: 1}}></div>
+
+        <Button
+          variant='outlined'
+          style={{
+            marginLeft: '1em',
+          }}
+          onClick={() => setCurrentDate(currentDate.subtract(1, 'day'))}
+        >Hari Sebelumnya</Button>
+        <Button
+          disabled={currentDate.format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')}
+          variant='outlined'
+          style={{
+            marginLeft: '1em',
+          }}
+          onClick={() => setCurrentDate(currentDate.add(1, 'day'))}
+        >Hari Selanjutnya</Button>
+      </div>
       <div style={{display: 'flex', height: '22em'}}>
         <Paper style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '22em', width: '18em'}}>
-          <Typography style={{alignSelf: 'center'}}>Kehadiran Guru hari ini</Typography>
+          <Typography style={{alignSelf: 'center'}}>Kehadiran Guru Berdasarkan Jadwal</Typography>
           <AbsencePieChart absences={absences}/>
         </Paper>
 
@@ -163,7 +217,7 @@ function Dashboard() {
       <div style={{display: 'flex', flexDirection: 'column', marginTop: '1em'}}>
         <Paper>
           <Typography style={{paddingLeft: '1em', alignSelf: 'center', textAlign: 'center'}}>
-            Daftar guru-guru yang tidak hadir
+            Daftar ketidakhadiran guru 
           </Typography>
           <TableContainer component={Paper}>
             <Table aria-label="customized table">
@@ -175,7 +229,7 @@ function Dashboard() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {absences ? absences.absentList.map((row, index) => (
+                {absences ? absences?.absenceList.map((row, index) => (
                   <AbsenceRow key={row.id} index={index} row={row} />
                 )) : <TableRow></TableRow>}
               </TableBody>

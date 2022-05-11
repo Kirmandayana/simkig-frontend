@@ -79,6 +79,9 @@ const pageAccessHandler = (role, page, handleClick, handleLogout) => {
                 case 'LihatLaporan':
                     contentPage = <TabelLaporanGuruContainer/>
                     break
+                case 'EvaluasiKinerjaGuru':
+                    contentPage = <EvalausiKinerjaGuru/>
+                    break
                 case 'Profil':
                     contentPage = <ProfilWakil/>
                     break

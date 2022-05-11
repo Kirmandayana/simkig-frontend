@@ -2,6 +2,25 @@ import React, { useEffect, useState } from 'react'
 import { BACKEND_URL } from '../../../../globals';
 import { Typography, FormControl, RadioGroup, Radio, FormControlLabel, Paper, Button } from '@mui/material'
 import dayjs from 'dayjs';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js'
+import { Bar} from 'react-chartjs-2'
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+)
 
 const createChoices = (start, end) => {
     let choices = []
@@ -71,9 +90,13 @@ const RubricRow = ({rubric, setEvaluationPoint, evaluationMode}) => {
             borderRadius: '0.5em',
             marginTop: '0.25em'
         }}>
-            <Paper sx={{padding: '1em'}}>
+            <Paper sx={{padding: '1em', display: 'flex'}}>
                 <Typography>
                     {rubric.parentIndicatorName}
+                </Typography>
+                <div style={{flexGrow: 1}}></div>
+                <Typography>
+                    Bobot ({rubric.valueWeight})
                 </Typography>
             </Paper>
             <div style={{
@@ -98,6 +121,7 @@ const RubricRow = ({rubric, setEvaluationPoint, evaluationMode}) => {
 function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPerformanceReview, evaluationMode, setSelectedPerformanceReview}) {
     const [evaluationRubric, setEvaluationRubric] = useState({})
     const [performanceReview, setPerformanceReview] = useState(null)
+    const [lagAndLeadData, setLagAndLeadData] = useState(null)
 
     const getEvaluationRubric = () => {
         fetch(BACKEND_URL + '/api/evaluation/getActiveTemplateListing', {
@@ -210,8 +234,30 @@ function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPer
         }).then(resp =>
             resp.status === 200 ?
             resp.json().then(data => {
+                console.log(data)
                 setPerformanceReview(data.result)
                 setEvaluationRubric(data.result.data)
+            }) :
+            resp.json().then(err => {console.log(err); alert(err.toString())})
+        )
+    }
+
+    const getLagNLeadIndicator = () => {
+        fetch(BACKEND_URL + '/api/evaluation/getLagAndLeadIndicator', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'access-token': localStorage.getItem('accessToken'),
+            },
+            body: JSON.stringify({
+                reviewId: selectedPerformanceReview.id,
+            }),
+        }).then(resp =>
+            resp.status === 200 ?
+            resp.json().then(data => {
+                console.log(data)
+                console.log(Object.values(data.result.thisUser))
+                setLagAndLeadData(data.result)
             }) :
             resp.json().then(err => {console.log(err); alert(err.toString())})
         )
@@ -250,8 +296,22 @@ function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPer
             getEvaluationRubric()
         } else if(evaluationMode === 'view') {
             getPerformanceReviewById()
+            getLagNLeadIndicator()
         }
     }, [])
+
+    const barOptions = {
+        responsive: true,
+        plugins: {
+                legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Lag and Lead',
+            },
+        },
+    };
 
     return (
         <div style={{
@@ -276,6 +336,63 @@ function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPer
             >
                 Kembali
             </Button>
+
+            {
+                evaluationMode === 'view' && performanceReview &&
+                <>
+                    <Paper elevation={4} sx={{display: 'flex', padding: '0.5em', backgroundColor: '#18A0FB', marginBottom: '1em'}}>
+                        <Paper sx={{display: 'flex', flexDirection: 'column', padding: '1em', marginRight: '1em', width: '11em'}}>
+                            <Typography variant='h6'>Informasi Evaluasi</Typography>
+                            <Typography>
+                                Anda sedang melihat hasil penilaian kinerja dari seorang Guru.
+                            </Typography>
+                        </Paper>
+
+                        <Paper sx={{display: 'flex', flexDirection: 'column', padding: '1em'}}>
+                            <Typography variant='h6'>Guru</Typography>
+                            <Typography>Nama: {performanceReview.targetTeacher?.fullName}</Typography>
+                            <Typography>NIP: {performanceReview.targetTeacher?.NIP}</Typography>
+                            <Typography>Jabatan: {performanceReview.targetTeacher?.occupation}</Typography>
+                        </Paper>
+
+                        <Paper sx={{display: 'flex', flexDirection: 'column', padding: '1em', marginLeft: '1em'}}>
+                            <Typography variant='h6'>Penilai</Typography>
+                            <Typography>Nama: {performanceReview.evaluator?.fullName}</Typography>
+                            <Typography>NIP: {performanceReview.evaluator?.NIP}</Typography>
+                            <Typography>Jabatan: {performanceReview.evaluator?.occupation}</Typography>
+                        </Paper>
+
+                        <Paper sx={{display: 'flex', flexDirection: 'column', padding: '1em', marginLeft: '1em'}}>
+                            <Typography variant='h6'>Evaluasi</Typography>
+                            <Typography>Tanggal: {dayjs(performanceReview.date).format('DD-MM-YYYY')}</Typography>
+                            <Typography>Waktu mulai evaluasi: {dayjs(performanceReview.evaluationStartDate).format('DD-MM-YYYY')}</Typography>
+                            <Typography>Batas akhir evaluasi: {dayjs(performanceReview.evaluationEndDate).format('DD-MM-YYYY')}</Typography>
+                        </Paper>
+                    </Paper>
+
+                    {
+                        lagAndLeadData &&
+                        <Paper elevation={4} sx={{display: 'flex', marginBottom: '1em'}}>
+                            <Bar options={barOptions} data={{
+                                labels: Object.keys(lagAndLeadData?.other),
+                                datasets: [
+                                    {
+                                        label: 'Rata-rata',
+                                        data: Object.values(lagAndLeadData?.other).map(el => el?.valAvg),
+                                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                                    },
+                                    {
+                                        label: selectedTeacher ? selectedTeacher.fullName : 'Guru ini',
+                                        data: Object.values(lagAndLeadData?.thisUser).map(el => el?.valAvg),
+                                        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                                    }
+                                ]
+                            }}/>
+                        </Paper>
+                    }
+                </>
+            }
+
             <Paper elevation={4} sx={{padding: '0.5em', marginBottom: '1em'}}>
                 <Typography variant='h6'>
                     Rubrik Penilaian
@@ -287,7 +404,7 @@ function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPer
                 }
             </Paper>
 
-            <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+            <div style={{display: getIdentifier().accessLevel === 2 ? 'none' : 'flex', justifyContent: 'flex-end'}}>
                 <Button
                     variant='contained'
                     onClick={evaluationMode === 'view' ? deleteEvaluation : submitEvaluation}

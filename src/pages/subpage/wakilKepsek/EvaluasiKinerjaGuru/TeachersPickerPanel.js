@@ -5,6 +5,16 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import dayjs from 'dayjs';
 
+const getIdentifier = () => {
+    const accessToken = localStorage.getItem('accessToken')
+
+    if(!accessToken)
+        return null
+
+    const identifier = accessToken.split('.')[0]
+    return JSON.parse(atob(identifier)).identifier
+}
+
 const TeacherPanelExpandable = ({row, setSelectedTeacher, setEvaluationMode, setSelectedPerformanceReview}) => {
     const [profilePic, setProfilePic] = useState('')
     const [collapseState, setCollapseState] = useState(false)
@@ -91,6 +101,7 @@ const TeacherPanelExpandable = ({row, setSelectedTeacher, setEvaluationMode, set
 
                         <div style={{flexGrow: 1}}></div>
                         <Button
+                            style={{display: getIdentifier().accessLevel === 2 ? 'none' : null}}
                             disabled={row.performanceReview ? true : false}
                             variant='outlined'
                             onClick={() => {
