@@ -34,7 +34,7 @@ const IndicatorRow = ({indicator, setEvaluationPoint, evaluationMode}) => {
             margin: '0.5em 1em 0.5em 1em',
             borderRadius: '1em'
         }}>
-            <Typography style={{width: '30em'}}>
+            <Typography style={{width: '26em'}}>
                 {indicator.indicatorName}
             </Typography>
             <div style={{flexGrow: 1}}></div>
