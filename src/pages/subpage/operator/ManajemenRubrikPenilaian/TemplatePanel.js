@@ -51,6 +51,7 @@ function TemplatePanel({
     setSelectedTemplate,
 }) {
     const [templates, setTemplates] = useState([])
+    const [activeTemplate, setActiveTemplate] = useState(-1)
 
     const fetchTemplates = () =>
         fetch(BACKEND_URL + '/api/evaluation/getAllTemplates', {
@@ -77,11 +78,40 @@ function TemplatePanel({
         }).then(resp =>
             resp.status === 200 ?
             fetchTemplates() :
+            resp.json().then(err => {console.log(err); alert(err.result)})
+        )
+
+    const getCurrentActiveTemplate = () =>
+        fetch(BACKEND_URL + '/api/evaluation/getActiveTemplate', {
+            method: 'GET',
+            headers: {
+                'access-token': localStorage.getItem('accessToken'),
+            },
+        }).then(resp =>
+            resp.status === 200 ?
+            resp.json().then(data => setActiveTemplate(data.result)) :
+            resp.json().then(err => {console.log(err); alert(err.toString())})
+        )
+    
+    const setCurrentActiveTemplate = templateId =>
+        fetch(BACKEND_URL + '/api/evaluation/setActiveTemplate', {
+            method: 'POST',
+            headers: {
+                'access-token': localStorage.getItem('accessToken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                templateId: templateId,
+            }),
+        }).then(resp =>
+            resp.status === 200 ?
+            getCurrentActiveTemplate() :
             resp.json().then(err => {console.log(err); alert(err.toString())})
         )
 
     useEffect(() => {
         fetchTemplates()
+        getCurrentActiveTemplate()
     }, [])
 
     return (
@@ -121,7 +151,15 @@ function TemplatePanel({
                                         <Button
                                             variant='contained'
                                             onClick={() => setSelectedTemplate(row)}
+                                            style={{
+                                                marginRight: '1em',
+                                            }}
                                         >Sunting</Button>
+                                        <Button
+                                            disabled={row.id === activeTemplate}
+                                            variant={row.id === activeTemplate ? 'outlined' : 'contained'}
+                                            onClick={() => setCurrentActiveTemplate(row.id)}
+                                        >{row.id === activeTemplate ? 'Sedang digunakan' : 'aktifkan'}</Button>
                                     </TableCell>
                                 </TableRow>
                             ))

@@ -8,6 +8,8 @@ import TeachersPickerPanel from './EvaluasiKinerjaGuru/TeachersPickerPanel';
 function EvaluasiKinerjaGuru() {
   const [isInEvalPeriod, setIsInEvalPeriod] = React.useState(-1) //-1 means it hasn't checked in backend yet
   const [selectedTeacher, setSelectedTeacher] = React.useState(null)
+  const [evaluationMode, setEvaluationMode] = React.useState('view') //'view', 'eval'
+  const [selectedPerformanceReview, setSelectedPerformanceReview] = React.useState(null)
 
   const checkIfInEvaluationPeriod = () => 
     fetch(BACKEND_URL + '/api/evaluation/checkIsInEvaluationPeriod', {
@@ -44,8 +46,8 @@ function EvaluasiKinerjaGuru() {
         <>
           {
             !selectedTeacher ? 
-              <TeachersPickerPanel {...{selectedTeacher, setSelectedTeacher}}/> :
-              <EvaluationDetailPanel/>
+              <TeachersPickerPanel {...{selectedTeacher, setSelectedTeacher, setEvaluationMode, setSelectedPerformanceReview}}/> :
+              <EvaluationDetailPanel {...{setSelectedTeacher, selectedTeacher, evaluationMode, selectedPerformanceReview, setSelectedPerformanceReview}}/>
           }
         </> :
         <EvalPeriodWarningPanel/>

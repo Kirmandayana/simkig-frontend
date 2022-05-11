@@ -278,7 +278,7 @@ const ChangeNameToolbar = ({
             }) :
             resp.json().then(err => {
                 console.log(err.result)
-                alert(err.toString())
+                alert(err.result)
             })
         )
     }
@@ -557,7 +557,7 @@ const RubricEditorPanel = ({
         }).then(resp =>
             resp.status === 200 ?
             resp.json().then(data => setRubricTableData(data.value)) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -578,7 +578,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -599,7 +599,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -618,7 +618,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -640,7 +640,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -662,7 +662,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
 
@@ -681,7 +681,7 @@ const RubricEditorPanel = ({
             resp.json().then(data => {
                 fetchRubricTableData()
             }) :
-            resp.json().then(err => {console.log(err.result); alert(err.toString())})
+            resp.json().then(err => {console.log(err.result); alert(err.result)})
         )
     }
     
