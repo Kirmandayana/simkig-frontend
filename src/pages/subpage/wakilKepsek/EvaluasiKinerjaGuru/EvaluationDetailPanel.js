@@ -393,6 +393,22 @@ function EvaluationDetailPanel({setSelectedTeacher, selectedTeacher, selectedPer
                 </>
             }
 
+            {
+                evaluationMode === 'eval' &&
+            <>
+                <Paper elevation={4} sx={{display: 'flex', padding: '0.5em', backgroundColor: '#18A0FB', marginBottom: '1em'}}>
+                    <Paper sx={{display: 'flex', flexDirection: 'column', padding: '1em', marginRight: '1em', width: '29em'}}>
+                        <Typography variant='h6'>Informasi Evaluasi</Typography>
+                        <Typography>
+                            Anda sedang mengisi evaluasi kinerja dari seorang Guru. <br/>
+                            Perlu diperhatikan, pada pengisian nilai indikator, <br/>
+                            semakin tinggi angkanya semakin tinggi nilai yang diberikan.
+                        </Typography>
+                    </Paper>
+                </Paper> 
+            </>
+            }
+
             <Paper elevation={4} sx={{padding: '0.5em', marginBottom: '1em'}}>
                 <Typography variant='h6'>
                     Rubrik Penilaian

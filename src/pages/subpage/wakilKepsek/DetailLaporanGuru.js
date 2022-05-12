@@ -7,6 +7,8 @@ const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
 dayjs.extend(utc)
 
+const TABLE_FONT_SIZE = 0.9
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -133,8 +135,8 @@ const DocumentRow = ({row, index}) => {
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
         {/* {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})} */}
-        <Typography>{dayjs(row.date).format('YYYY-MM-DD')}</Typography>
-        <Typography style={{fontSize: '0.7em', color: 'rgba(0, 0, 0, 0.75)'}}>
+        <Typography style={{fontSize: TABLE_FONT_SIZE + 'em'}}>{dayjs(row.date).format('YYYY-MM-DD')}</Typography>
+        <Typography style={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em', color: 'rgba(0, 0, 0, 0.75)'}}>
           ({row.dateHour.toString().length < 2 ? '0' + row.dateHour : row.dateHour}.{row.dateMinute.toString().length < 2 ? '0' + row.dateMinute : row.dateMinute} -
           {row.dateEndHour.toString().length < 2 ? '0' + row.dateEndHour : row.dateEndHour}.{row.dateEndMinute.toString().length < 2 ? '0' + row.dateEndMinute : row.dateEndMinute})
         </Typography>
@@ -142,26 +144,28 @@ const DocumentRow = ({row, index}) => {
       {
         row.document ?
         <>
-          <TableCell align="left">{row.document.className}</TableCell>
-          <TableCell align="left">{row.document.mataPelajaran}</TableCell>
-          <TableCell align="left">{row.document.topik}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaKelas}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaAktif} / {row.document.jumlahSiswaSakit} / {row.document.jumlahSiswaIzin}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.className}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.mataPelajaran}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.topik}</TableCell>
+          {/* <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaKelas}</TableCell> */}
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaAktif}</TableCell>
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaSakit}</TableCell>
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaIzin}</TableCell>
           <TableCell align="center">
             <img src={img} style={{height: '4em'}} />
           </TableCell>
-          <TableCell align="left">{row.document.keluhan}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.keluhan}</TableCell>
         </>
         :
         row.absent ?
         <>
-          <TableCell align="center" colSpan={7}>
+          <TableCell align="center" colSpan={8} sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>
             Izin - ({row.absent.reason})
           </TableCell>
         </> :
         <>
           {/* <TableCell align="center" colSpan={5}>Belum diisi</TableCell> */}
-          <TableCell align="center" colSpan={7}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
+          <TableCell align="center" colSpan={8} sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
         </>
       }
     </TableRow>
@@ -345,14 +349,34 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
             <Table aria-label="simple table">
               <TableHead style={{backgroundColor: '#78a2cc'}}>
                 <TableRow>
-                  <TableCell align="center">Tanggal</TableCell>
+                {
+                  [
+                    ['Tanggal', '6.73em'],
+                    ['Nama Kelas',],
+                    ['Mata Pelajaran', '8em'],
+                    ['Materi / Topik', ],
+                    // ['Jumlah Siswa Kelas',],
+                    ['Hadir', '1em'],
+                    ['Sakit', '1em'],
+                    ['Izin', '1em'],
+                    ['Bukti KBM','1em'],
+                    ['Keluhan',],
+                  ].map((el, idx) => (
+                    <TableCell key={idx} sx={{fontSize: TABLE_FONT_SIZE + 'em', paddingLeft: 0, paddingRight: 0, width: el.length > 1 ? el[1] : null}}>
+                      <div style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
+                        {el[0]}
+                      </div>
+                    </TableCell>
+                  ))
+                }
+                  {/* <TableCell align="center">Tanggal</TableCell>
                   <TableCell align="center">Nama Kelas</TableCell>
                   <TableCell align="center">Mata Pelajaran</TableCell>
                   <TableCell align="center">Materi / Topik</TableCell>
                   <TableCell align="center">Jumlah Siswa</TableCell>
                   <TableCell align="center">Hadir / Sakit / Izin</TableCell>
                   <TableCell align="center">Bukti KBM</TableCell>
-                  <TableCell align="center">Keluhan</TableCell>
+                  <TableCell align="center">Keluhan</TableCell> */}
                 </TableRow>
               </TableHead>
               <TableBody>
