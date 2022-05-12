@@ -30,13 +30,22 @@ const StudentAttendanceSumsChart = ({attendances}) => {
   //Line Chart
   const dataLineChart = {
     labels: attendances.dates.map(el => dayjs(el).date()),
-    datasets: [{
-      label: 'Total Kehadiran Siswa',
-      data: attendances.data.map(el => el.count),
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    }]
+    datasets: [
+      {
+        label: 'Tidak Hadir',
+        data: attendances.data.map(el => el.countAbsent),
+        fill: false,
+        borderColor: 'rgb(255, 100, 0)',
+        tension: 0,
+      },
+      {
+        label: 'Hadir',
+        data: attendances.data.map(el => el.count),
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0,
+      }
+    ]
   }
 
   return (
@@ -209,7 +218,8 @@ function Dashboard() {
           <AbsencePieChart absences={absences}/>
         </Paper>
 
-        <Paper style={{display: 'flex', width: '39em', marginLeft: '1em', alignItems: 'center', }}>
+        <Paper style={{display: 'flex', flexDirection: 'column', width: '39em', marginLeft: '1em', alignItems: 'center', }}>
+          <Typography>Total Kehadiran Siswa</Typography>
           <StudentAttendanceSumsChart attendances={studentAttendance}/>
         </Paper>
       </div>
