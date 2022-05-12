@@ -29,6 +29,8 @@ const getUserInfoFromAccessToken = () => {
   return jwtBody
 }
 
+const TABLE_FONT_SIZE = 0.9
+
 const getDocumentList = async (rangeStart, rangeEnd) => {
   const response = await fetch(BACKEND_URL + `/api/document/getDocumentList`, {
     method: 'POST',
@@ -172,8 +174,8 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsentButto
     <TableRow style={{backgroundColor}}>
       <TableCell component="th" scope="row" align="left">
         {/* {dayjs(row.date).format('YYYY-MM-DD')}{row.photoFilename && ' '+row.dateHour.toLocaleString('en-US', {minimumIntegerDigits: 2})+':'+row.dateMinute.toLocaleString('en-US', {minimumIntegerDigits: 2})} */}
-        <Typography>{dayjs(row.date).format('YYYY-MM-DD')}</Typography>
-        <Typography style={{fontSize: '0.7em', color: 'rgba(0, 0, 0, 0.75)'}}>
+        <Typography style={{fontSize: TABLE_FONT_SIZE + 'em'}}>{dayjs(row.date).format('YYYY-MM-DD')}</Typography>
+        <Typography style={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em', color: 'rgba(0, 0, 0, 0.75)'}}>
           ({row.dateHour.toString().length < 2 ? '0' + row.dateHour : row.dateHour}.{row.dateMinute.toString().length < 2 ? '0' + row.dateMinute : row.dateMinute} -
           {row.dateEndHour.toString().length < 2 ? '0' + row.dateEndHour : row.dateEndHour}.{row.dateEndMinute.toString().length < 2 ? '0' + row.dateEndMinute : row.dateEndMinute})
         </Typography>
@@ -181,37 +183,45 @@ const DocumentRow = ({row, index, removeDocumentButtonHandler, removeAbsentButto
       {
         row.document ?
         <>
-          <TableCell align="left">{row.document.className}</TableCell>
-          <TableCell align="left">{row.document.mataPelajaran}</TableCell>
-          <TableCell align="left">{row.document.topik}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaKelas}</TableCell>
-          <TableCell align="center">{row.document.jumlahSiswaAktif} / {row.document.jumlahSiswaSakit} / {row.document.jumlahSiswaIzin}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.className}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.mataPelajaran}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.topik}</TableCell>
+          {/* <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaKelas}</TableCell> */}
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaAktif}</TableCell>
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaSakit}</TableCell>
+          <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.jumlahSiswaIzin}</TableCell>
           <TableCell align="center">
             <img src={img} style={{height: '4em'}} />
           </TableCell>
-          <TableCell align="left">{row.document.keluhan}</TableCell>
+          <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{row.document.keluhan}</TableCell>
           <TableCell align="center">
             <Button
               variant='contained'
               color='error'
               onClick={() => removeDocumentButtonHandler(row)}
+              style={{
+                fontSize: TABLE_FONT_SIZE + 'em',
+              }}
             >Hapus</Button>
           </TableCell>
         </>
         :
         row.absent ?
         <>
-          <TableCell align="center" colSpan={7}>
+          <TableCell align="center" colSpan={8} sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>
             Izin - ({row.absent.reason})
           </TableCell>
           <TableCell>
             <Button
               variant='contained'
               onClick={() => removeAbsentButtonHandler(row)}
+              style={{
+                fontSize: TABLE_FONT_SIZE + 'em',
+              }}
             >Hapus</Button>
           </TableCell>
         </> :
-        <TableCell align="center" colSpan={8}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
+        <TableCell align="center" colSpan={9} sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>{isLate ? 'Tidak diisi' : 'Belum diisi'} ({row.mataPelajaran} - {row.classroom?.className})</TableCell>
       }
     </TableRow>
   )
@@ -282,15 +292,38 @@ function HasilDocument() {
           <Table sx={{ minWidth: '50em' }} aria-label="simple table">
             <TableHead style={{backgroundColor: '#78a2cc'}}>
               <TableRow>
-                <TableCell align="left">Tanggal</TableCell>
-                <TableCell align="left">Nama Kelas</TableCell>
-                <TableCell align="left">Mata Pelajaran</TableCell>
-                <TableCell align="left">Topik / Materi</TableCell>
-                <TableCell align="center" sx={{width: '1em'}}>Jumlah Siswa Kelas</TableCell>
-                <TableCell align="center">Hadir / Sakit / Izin</TableCell>
-                <TableCell align="center">Bukti KBM</TableCell>
-                <TableCell align="left">Keluhan</TableCell>
-                <TableCell align="center">Aksi</TableCell>
+                {
+                  [
+                    ['Tanggal','8.9em'],
+                    ['Nama Kelas',],
+                    ['Mata Pelajaran',],
+                    ['Topik / Materi', '1em'],
+                    // ['Jumlah Siswa Kelas', '1em'],
+                    ['Hadir', '1em'],
+                    ['Sakit', '1em'],
+                    ['Izin', '1em'],
+                    ['Bukti KBM',],
+                    ['Keluhan', '1em'],
+                    ['Aksi', '1em'],
+                  ].map((el, idx) => (
+                    <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE + 'em', paddingLeft: 0, paddingRight: 0, width: el.length > 1 ? el[1] : null}}>
+                      <div style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
+                        {el[0]}
+                      </div>
+                    </TableCell>  
+                  ))
+                }
+                {/* <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Tanggal</TableCell>
+                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Nama Kelas</TableCell>
+                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Mata Pelajaran</TableCell>
+                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Topik / Materi</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Jumlah Siswa Kelas</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Hadir</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Sakit</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Izin</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Bukti KBM</TableCell>
+                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Keluhan</TableCell>
+                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Aksi</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
