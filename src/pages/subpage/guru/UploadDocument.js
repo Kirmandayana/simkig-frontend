@@ -291,7 +291,7 @@ const UnggahDokumenTab = () => {
                      value={dateVal}
                      onChange={(newValue) => {
                         setDateVal(newValue);
-                     }} renderInput={params => <TextField style={{width: '40em'}} {...params} />}  />
+                     }} renderInput={params => <TextField style={{width: '37.375em'}} {...params} />}  />
                </LocalizationProvider>
             </div>
 
@@ -300,7 +300,7 @@ const UnggahDokumenTab = () => {
                <TextField
                   disabled
                   id='outline-basic' 
-                  style={{width: '40em'}}
+                  style={{width: '37.375em'}}
                   value={namaKelasVal}
                   onChange={e => setNamaKelasVal(e.target.value)}
                />
@@ -318,7 +318,7 @@ const UnggahDokumenTab = () => {
                      <TextField 
                         disabled
                         id='outline-basic' 
-                        style={{width: '40em'}}
+                        style={{width: '37.375em'}}
                         value={mapelVal}
                         onChange={e => setMapelVal(e.target.value)}
                      />
@@ -328,7 +328,7 @@ const UnggahDokumenTab = () => {
                      <Typography style={{flexGrow: 1}}>Topik <span style={{color: 'red'}}>*</span></Typography> 
                      <TextField 
                         id='outline-basic' 
-                        style={{width: '40em'}}
+                        style={{width: '37.375em'}}
                         value={topikVal}
                         onChange={e => setTopikVal(e.target.value)}
                      />
@@ -344,7 +344,7 @@ const UnggahDokumenTab = () => {
                            disabled
                            type='number' 
                            InputLabelProps={{ shrink: true, }} 
-                           style={{width: '8em'}}
+                           style={{width: '5em'}}
                            value={totalSiswaVal}
                            onChange={e => setTotalSiswaVal(e.target.value)}
                         />
@@ -386,8 +386,11 @@ const UnggahDokumenTab = () => {
 
 
                   <div style={{display: 'flex', alignItems: 'center', marginTop: '1em', flexDirection: 'row', flexGrow: 1}}>
-                     <Typography style={{flexGrow: 1}} >Bukti KBM <span style={{color: 'red'}}>*</span></Typography>
-                     <div style={{width: '40em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                     <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
+                        <Typography>Bukti KBM <span style={{color: 'red'}}>*</span></Typography>
+                        <Typography style={{fontSize: '0.8em', color: 'rgba(0,0,0,0.5)', fontWeight: 'bolder'}}>(max 10 MB, .jpg/.png)</Typography>
+                     </div>
+                     <div style={{width: '37.375em', display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         <input 
                            type='file' 
                            ref={fileGambarRef}
@@ -416,7 +419,7 @@ const UnggahDokumenTab = () => {
                         id='outlined-multiline-static' 
                         multiline 
                         rows={5} 
-                        style={{width: '40em'}}
+                        style={{width: '37.375em'}}
                         value={keluhanVal}
                         onChange={e => setKeluhanVal(e.target.value)}
                      />
