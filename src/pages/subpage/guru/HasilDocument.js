@@ -14,11 +14,16 @@ import {
   Select, 
   InputLabel, 
   FormControl, 
-  Typography
+  Typography,
+  TableSortLabel,
+  TablePagination
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
+import { Box } from '@mui/system';
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
+
 dayjs.extend(utc)
 
 const getUserInfoFromAccessToken = () => {
@@ -51,11 +56,76 @@ const getDocumentList = async (rangeStart, rangeEnd) => {
     throw new Error(await response.json().then(err => {console.log(err.result); return err.result}))
 }
 
-
 const getMonthRange = (month, year) => [
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-01`,
   `${year}-${month.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping: false})}-${new Date(year, month, 0).getDate()}`
 ]
+
+const descComparator = (a, b, orderBy) => {
+  if(orderBy.type === 'date') {
+    const aDate = dayjs(a[orderBy.id])
+    const bDate = dayjs(b[orderBy.id])
+
+    return aDate.isBefore(bDate) ? -1 : aDate.isAfter(bDate) ? 1 : 0
+  } else if(orderBy.type === 'numeric') {
+      if(a.document) {
+        if(b.document) {
+          const aValue = a.document[orderBy.id]
+          const bValue = b.document[orderBy.id]
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        } else {
+          const aValue = a.document[orderBy.id]
+          const bValue = 0
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        }
+      } else {
+        if(b.document) {
+          const aValue = 0
+          const bValue = b.document[orderBy.id]
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        } else {
+          const aValue = 1
+          const bValue = 0
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    }
+  } else if(orderBy.type === 'string') {
+    if(a.document) {
+      if(b.document) {
+        const aValue = a.document[orderBy.id]
+        const bValue = b.document[orderBy.id]
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      } else {
+        const aValue = a.document[orderBy.id]
+        const bValue = b[orderBy.id] ? b[orderBy.id] : ''
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    } else {
+      if(b.document) {
+        const aValue = a[orderBy.id] ? a[orderBy.id] : ''
+        const bValue = b.document[orderBy.id]
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      } else {
+        const aValue = a[orderBy.id] ? a[orderBy.id] : 'a'
+        const bValue = b[orderBy.id] ? b[orderBy.id] : ''
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    }
+  }
+}
+
+const getComparator = (order, orderBy) => 
+  order === 'desc'
+  ? (a, b) => descComparator(a, b, orderBy)
+  : (a, b) => -descComparator(a, b, orderBy)
 
 const FilterBar = ({setData, month, setMonth, year, setYear}) => {
   return (
@@ -114,6 +184,63 @@ const FilterBar = ({setData, month, setMonth, year, setYear}) => {
         }}
       >Tampilkan</Button>
     </div>
+  )
+}
+
+const DocumentTableHeader = ({order, orderBy, onRequestSort}) => {
+  const createSortHander = property => event => {
+    onRequestSort(event, property)
+  }
+
+  return (
+    <TableHead style={{backgroundColor: '#78a2cc'}}>
+      <TableRow>
+        {
+          [
+            {id: 'date', name: 'Tanggal', width: '8.9em', type: 'date'},
+            {id: 'className', name: 'Nama Kelas', type: 'string'},
+            {id: 'mataPelajaran', name: 'Mata Pelajaran', type: 'string'},
+            {id: 'topik', name: 'Topik / Materi', width: '1em', type: 'string'},
+            // {name: 'Jumlah Siswa Kelas', width: '1em', type: 'string'},
+            {id: 'jumlahSiswaAktif', name: 'Hadir', width: '1em', type: 'numeric'},
+            {id: 'jumlahSiswaSakit', name: 'Sakit', width: '1em', type: 'numeric'},
+            {id: 'jumlahSiswaIzin', name: 'Izin', width: '1em', type: 'numeric'},
+            {id: '', name: 'Bukti KBM', type: 'non-sort'},
+            {id: 'keluhan', name: 'Keluhan', width: '1em', type: 'string'},
+            {id: '', name: 'Aksi', width: '1em', type: 'non-sort'},
+          ].map((el, idx) => (
+            <TableCell 
+              align='left'
+              sx={{
+                fontSize: TABLE_FONT_SIZE + 'em',
+                paddingLeft: 0,
+                paddingRight: 0,
+                width: el.width ? el.width : null,
+              }}
+              sortDirection={orderBy.name === el.name ? order : false}
+            >
+              <div style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
+              {
+                el.type === 'non-sort' ? el.name :
+                <TableSortLabel
+                  active={orderBy.name === el.name}
+                  direction={orderBy.name === el.name ? order : 'asc'}
+                  onClick={createSortHander(el)}
+                >
+                  {el.name}
+                  {orderBy.name === el.name ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              }
+              </div>
+            </TableCell>
+          ))
+        }
+      </TableRow>
+    </TableHead>
   )
 }
 
@@ -232,6 +359,12 @@ function HasilDocument() {
   const [month, setMonth] = useState(new Date().getMonth() + 1)
   const [year, setYear] = useState(new Date().getFullYear())
 
+  const [order, setOrder] = useState('asc')
+  const [orderBy, setOrderBy] = useState({name: 'date', type: 'date'})
+
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
   const removeDocumentButtonHandler = (row) => {
     let confirmDelete = window.confirm('Apakah anda yakin ingin menghapus laporan ini?')
 
@@ -285,12 +418,38 @@ function HasilDocument() {
     .catch(err => {console.log(err); alert(err?.result)})
   }, [])
 
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy.name === property.name && order === 'asc'
+
+    setOrder(isAsc ? 'desc' : 'asc')
+    
+    if(property.type === 'non-sort')
+      return
+
+    setOrderBy(property)
+  }
+
+  const handleChangePage = (event, newPage) => setPage(newPage)
+  const handleChangeRowsPerPage = event => {setRowsPerPage(parseInt(event.target.value), 10); setPage(0)}
+
+  //avoid layout jump when reaching the last page with empty rows
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0
+
   return (
     <div style={{display:'flex', flexDirection: 'column', flexGrow:1, alignItems: 'center', marginTop: '1em'}}>
       <FilterBar setData={setData} month={month} setMonth={setMonth} year={year} setYear={setYear}/>
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        component="div"
+        count={data.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <TableContainer component={Paper} style={{flexGrow: 1}}>
           <Table sx={{ minWidth: '50em' }} aria-label="simple table">
-            <TableHead style={{backgroundColor: '#78a2cc'}}>
+            {/* <TableHead style={{backgroundColor: '#78a2cc'}}>
               <TableRow>
                 {
                   [
@@ -313,33 +472,35 @@ function HasilDocument() {
                     </TableCell>  
                   ))
                 }
-                {/* <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Tanggal</TableCell>
-                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Nama Kelas</TableCell>
-                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Mata Pelajaran</TableCell>
-                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Topik / Materi</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Jumlah Siswa Kelas</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Hadir</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Sakit</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Izin</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Bukti KBM</TableCell>
-                <TableCell align="left" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Keluhan</TableCell>
-                <TableCell align="center" sx={{fontSize: TABLE_FONT_SIZE * 0.8 + 'em'}}>Aksi</TableCell> */}
               </TableRow>
-            </TableHead>
+            </TableHead> */}
+            <DocumentTableHeader
+              order={order}
+              orderBy={orderBy}
+              onRequestSort={handleRequestSort}
+            />
             <TableBody>
-              {data.sort((a, b) => 
-                dayjs(a.date).isAfter(dayjs(b.date)) ? 1 : -1
-              ).map((row, index) => 
-                <DocumentRow 
-                  row={row} 
-                  key={row.id} 
-                  index={index} 
-                  {...{
-                    removeDocumentButtonHandler,
-                    removeAbsentButtonHandler,
-                  }}
-                />
-              )}
+            {
+              data
+                .sort((a, b) => getComparator(order, orderBy)(a, b))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, idx) => (
+                  <DocumentRow
+                    row={row}
+                    key={idx}
+                    index={idx}
+                    {...{
+                      removeDocumentButtonHandler,
+                      removeAbsentButtonHandler,
+                    }}
+                  />
+                ))
+            }
+            {emptyRows > 0 && (
+              <TableRow style={{height: (emptyRows * 53) * emptyRows}}>
+                <TableCell colSpan={12} />
+              </TableRow>
+            )}
             </TableBody>
           </Table>
       </TableContainer>

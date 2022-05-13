@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Paper, Typography, ThemeProvider, createTheme } from '@mui/material';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import loginArtwork from '../../../assets/loginArtwork.png';
+import { TextField, Button, Paper, Typography, ThemeProvider, createTheme, TablePagination } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
+import { Box } from '@mui/system';
 const dayjs = require('dayjs')
 const utc = require('dayjs/plugin/utc')
 const {BACKEND_URL} = require('../../../globals')
@@ -51,26 +52,129 @@ const monthNumber = {
   12: 'Desember'
 }
 
-// const getDocumentList = (userId, month, year) => new Promise((resolve, reject) => {
-//   fetch(BACKEND_URL + `/api/document/getDocumentList`, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       'access-token': localStorage.getItem('accessToken')
-//     },
-//     body: JSON.stringify({
-//       rangeStart: getMonthRange(month, year)[0],
-//       rangeEnd: getMonthRange(month, year)[1],
-//       teacherId: userId
-//     })
-//   })
-//   .then(response => 
-//     response.status === 200 ? 
-//     response.json().then(data => resolve(data)) : 
-//     response.json().then(data => reject(data))
-//   )
-//   .catch(err => reject(err))
-// })
+
+const descComparator = (a, b, orderBy) => {
+  if(orderBy.type === 'date') {
+    const aDate = dayjs(a[orderBy.id])
+    const bDate = dayjs(b[orderBy.id])
+
+    return aDate.isBefore(bDate) ? -1 : aDate.isAfter(bDate) ? 1 : 0
+  } else if(orderBy.type === 'numeric') {
+      if(a.document) {
+        if(b.document) {
+          const aValue = a.document[orderBy.id]
+          const bValue = b.document[orderBy.id]
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        } else {
+          const aValue = a.document[orderBy.id]
+          const bValue = 0
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        }
+      } else {
+        if(b.document) {
+          const aValue = 0
+          const bValue = b.document[orderBy.id]
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+        } else {
+          const aValue = 1
+          const bValue = 0
+
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    }
+  } else if(orderBy.type === 'string') {
+    if(a.document) {
+      if(b.document) {
+        const aValue = a.document[orderBy.id]
+        const bValue = b.document[orderBy.id]
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      } else {
+        const aValue = a.document[orderBy.id]
+        const bValue = b[orderBy.id] ? b[orderBy.id] : ''
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    } else {
+      if(b.document) {
+        const aValue = a[orderBy.id] ? a[orderBy.id] : ''
+        const bValue = b.document[orderBy.id]
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      } else {
+        const aValue = a[orderBy.id] ? a[orderBy.id] : 'a'
+        const bValue = b[orderBy.id] ? b[orderBy.id] : ''
+
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0
+      }
+    }
+  }
+}
+
+const getComparator = (order, orderBy) => 
+  order === 'desc'
+  ? (a, b) => descComparator(a, b, orderBy)
+  : (a, b) => -descComparator(a, b, orderBy)
+
+const DocumentTableHeader = ({order, orderBy, onRequestSort}) => {
+  const createSortHander = property => event => {
+    onRequestSort(event, property)
+  }
+
+  return (
+    <TableHead style={{backgroundColor: '#78a2cc'}}>
+      <TableRow>
+        {
+          [
+            {id: 'date', name: 'Tanggal', width: '10em', type: 'date'},
+            {id: 'className', name: 'Nama Kelas', width: '9em', type: 'string'},
+            {id: 'mataPelajaran', name: 'Mata Pelajaran', width: '9em', type: 'string'},
+            {id: 'topik', name: 'Topik / Materi', type: 'string'},
+            // {name: 'Jumlah Siswa Kelas', width: '1em', type: 'string'},
+            {id: 'jumlahSiswaAktif', name: 'Hadir', width: '1em', type: 'numeric'},
+            {id: 'jumlahSiswaSakit', name: 'Sakit', width: '1em', type: 'numeric'},
+            {id: 'jumlahSiswaIzin', name: 'Izin', width: '1em', type: 'numeric'},
+            {id: '', name: 'Bukti KBM', type: 'non-sort'},
+            {id: 'keluhan', name: 'Keluhan', width: '1em', type: 'string'},
+          ].map((el, idx) => (
+            <TableCell 
+              align='left'
+              sx={{
+                fontSize: TABLE_FONT_SIZE * 0.8 + 'em',
+                paddingLeft: 0,
+                paddingRight: 0,
+                width: el.width ? el.width : null,
+              }}
+              sortDirection={orderBy.name === el.name ? order : false}
+            >
+              <div style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
+              {
+                el.type === 'non-sort' ? el.name :
+                <TableSortLabel
+                  active={orderBy.name === el.name}
+                  direction={orderBy.name === el.name ? order : 'asc'}
+                  onClick={createSortHander(el)}
+                >
+                  {el.name}
+                  {orderBy.name === el.name ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              }
+              </div>
+            </TableCell>
+          ))
+        }
+      </TableRow>
+    </TableHead>
+  )
+}
+
 
 const DocumentRow = ({row, index}) => {
   const [img, setImg] = useState('')
@@ -175,6 +279,26 @@ const DocumentRow = ({row, index}) => {
 function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelectedUser}) {
   const [data, setData] = useState([])
   const [teacherProfilePic, setTeacherProfilePic] = useState('')
+
+  const [order, setOrder] = useState('asc')
+  const [orderBy, setOrderBy] = useState({name: 'date', type: 'date'})
+
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+
+  const handleChangePage = (event, newPage) => setPage(newPage)
+  const handleChangeRowsPerPage = event => {setRowsPerPage(parseInt(event.target.value), 10); setPage(0)}
+  
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy.name === property.name && order === 'asc'
+
+    setOrder(isAsc ? 'desc' : 'asc')
+    
+    if(property.type === 'non-sort')
+      return
+
+    setOrderBy(property)
+  }
 
   const exportDocumentButtonHandler = () => {
     //kirim request ke API Endpoint
@@ -345,9 +469,18 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
 
         {/* Table */}
         <div style={{marginTop: '1em', width: '100%'}}>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            component="div"
+            count={data.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
           <TableContainer component={Paper}>
             <Table aria-label="simple table">
-              <TableHead style={{backgroundColor: '#78a2cc'}}>
+              {/* <TableHead style={{backgroundColor: '#78a2cc'}}>
                 <TableRow>
                 {
                   [
@@ -376,13 +509,23 @@ function DetailLaporanGuru({selectedUser, selectedMonth, selectedYear, setSelect
                   <TableCell align="center">Jumlah Siswa</TableCell>
                   <TableCell align="center">Hadir / Sakit / Izin</TableCell>
                   <TableCell align="center">Bukti KBM</TableCell>
-                  <TableCell align="center">Keluhan</TableCell> */}
+                  <TableCell align="center">Keluhan</TableCell> 
                 </TableRow>
-              </TableHead>
+              </TableHead> */}
+              <DocumentTableHeader
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+              />
               <TableBody>
-                {data.map((row, index) => (
-                  <DocumentRow key={index} row={row} index={index}/>
-                ))}
+              {
+                data
+                  .sort((a, b) => getComparator(order, orderBy)(a, b))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, idx) => (
+                    <DocumentRow key={idx} row={row} index={idx}/>
+                  ))
+              }
               </TableBody>
             </Table>
           </TableContainer>
